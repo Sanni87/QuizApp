@@ -3,7 +3,7 @@ import ProgressBar from "./components/ProgressBar";
 import QuizCard from "./components/QuizCard";
 import ResultScreen from "./components/ResultScreen";
 
-const API = "/api";
+const API = import.meta.env.VITE_API_URL ?? "/api";
 
 const VIEWS = { HOME: "home", QUIZ: "quiz", RESULT: "result" };
 

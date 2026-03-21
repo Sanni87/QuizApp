@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const API = "/api";
+const API = import.meta.env.VITE_API_URL ?? "/api";
 
 export default function QuizCard({ quizId, question, index, total, onNext }) {
   const [selected, setSelected] = useState(null);
