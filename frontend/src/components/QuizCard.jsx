@@ -183,7 +183,7 @@ export default function QuizCard({ quizId, question, index, total, onNext }) {
 
       {result && (
         <button
-          onClick={onNext}
+          onClick={() => onNext(result?.correct)}
           style={{
             marginTop: "1.25rem",
             width: "100%",
