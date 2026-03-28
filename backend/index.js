@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 
-const quizRoutes = require("./routes/quiz");
+const quizRoutes = require("./routes/quiz").default;
 
 const app = express();
 const PORT = process.env.PORT || 3001;

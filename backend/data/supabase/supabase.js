@@ -5,7 +5,7 @@
 // ============================================================
 
 import { createClient } from '@supabase/supabase-js';
-import { quizzes as mockQuizzes } from '../mocks';
+import { quizzes as mockQuizzes } from '../mocks.js';
 
 // --- Inicialización -----------------------------------------------------------
 const supabaseUrl  = process.env.SUPABASE_URL;
@@ -17,7 +17,7 @@ const supabase = (supabaseUrl && supabaseKey)
   : null;
 
 if (!supabase) {
-  console.warn('[DB] Variables SUPABASE_URL / SUPABASE_ANON_KEY no encontradas → usando mocks');
+  console.warn('[DB] Variables SUPABASE_URL / SUPABASE_SERVICE_KEY no encontradas → usando mocks');
 }
 
 // --- Helpers ------------------------------------------------------------------
@@ -70,7 +70,7 @@ function normalizeMocks() {
  * Devuelve todos los quizzes con sus preguntas y opciones.
  */
 async function getAllQuizzes() {
-  if (!supabase) return normalizeMocks();
+  //if (!supabase) return normalizeMocks();
 
   try {
     const { data, error } = await supabase
@@ -145,4 +145,4 @@ async function getQuizById(id) {
   }
 }
 
-module.exports = { getAllQuizzes, getQuizById };
+export { getAllQuizzes, getQuizById };

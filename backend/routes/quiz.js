@@ -1,21 +1,16 @@
-const express = require("express");
+import * as express from "express";
+import { getAllQuizzes, getQuizById } from '../data/supabase/supabase.js';
 const router = express.Router();
-const { quizzes } = require("../data/mocks");
 
 // GET /api/quizzes — list all quizzes (no answers exposed)
-router.get("/", (req, res) => {
-  const list = quizzes.map(({ id, title, description, questions }) => ({
-    id,
-    title,
-    description,
-    questionCount: questions.length,
-  }));
+router.get("/", async (req, res) => {
+  const list = await getAllQuizzes();
   res.json(list);
 });
 
 // GET /api/quizzes/:id — get a quiz with questions (no correct answers)
-router.get("/:id", (req, res) => {
-  const quiz = quizzes.find((q) => q.id === req.params.id);
+router.get("/:id", async (req, res) => {
+  const quiz = await getQuizById(req.params.id);
   if (!quiz) return res.status(404).json({ error: "Quiz not found" });
 
   const sanitized = {
@@ -32,14 +27,14 @@ router.get("/:id", (req, res) => {
 });
 
 // POST /api/quizzes/:quizId/answer — check a single answer
-router.post("/:quizId/answer", (req, res) => {
+router.post("/:quizId/answer", async (req, res) => {
   const { questionId, selectedIndex } = req.body;
 
   if (selectedIndex === undefined || questionId === undefined) {
     return res.status(400).json({ error: "questionId and selectedIndex are required" });
   }
 
-  const quiz = quizzes.find((q) => q.id === req.params.quizId);
+  const quiz = await getQuizById(req.params.id);
   if (!quiz) return res.status(404).json({ error: "Quiz not found" });
 
   const question = quiz.questions.find((q) => q.id === questionId);
@@ -54,4 +49,4 @@ router.post("/:quizId/answer", (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;
