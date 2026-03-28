@@ -24,15 +24,15 @@ if (!supabase) {
 
 /**
  * Convierte una fila de Supabase al formato que espera el frontend:
- * { id, quiz_id, text, explanation, order_index, options: [...] }
- * → { id, text, explanation, options: [{ id, text, is_correct }] }
+ * { id, quiz_id, text, explanation, order_index, answers: [...] }
+ * → { id, text, explanation, answers: [{ id, text, is_correct }] }
  */
 function formatQuestion(q) {
   return {
     id:          q.id,
     text:        q.text,
     explanation: q.explanation ?? null,
-    options:     (q.options ?? [])
+    answers:     (q.answers ?? [])
                    .sort((a, b) => a.order_index - b.order_index)
                    .map(o => ({
                      id:         o.id,
@@ -55,7 +55,7 @@ function normalizeMocks() {
       id:          `${quiz.id}_q${qi + 1}`,
       text:        q.text,
       explanation: q.explanation ?? null,
-      options:     q.options.map((text, i) => ({
+      answers:     q.answers.map((text, i) => ({
         id:         i + 1,
         text,
         is_correct: i === q.correctIndex,
@@ -79,7 +79,7 @@ async function getAllQuizzes() {
         id, title, description, order_index,
         questions (
           id, text, explanation, order_index,
-          options (
+          answers (
             id, text, is_correct, order_index
           )
         )
@@ -107,10 +107,10 @@ async function getAllQuizzes() {
  * Devuelve un quiz por id con sus preguntas y opciones.
  */
 async function getQuizById(id) {
-  if (!supabase) {
-    const normalized = normalizeMocks();
-    return normalized.find(q => q.id === id) ?? null;
-  }
+  // if (!supabase) {
+  //   const normalized = normalizeMocks();
+  //   return normalized.find(q => q.id === id) ?? null;
+  // }
 
   try {
     const { data, error } = await supabase
@@ -119,7 +119,7 @@ async function getQuizById(id) {
         id, title, description, order_index,
         questions (
           id, text, explanation, order_index,
-          options (
+          answers (
             id, text, is_correct, order_index
           )
         )
@@ -139,9 +139,10 @@ async function getQuizById(id) {
     };
 
   } catch (err) {
-    console.error(`[DB] Error en getQuizById(${id}), usando fallback a mocks:`, err.message);
-    const normalized = normalizeMocks();
-    return normalized.find(q => q.id === id) ?? null;
+    console.error(`[DB] Error en getQuizById(${id})`, err.message);
+    // const normalized = normalizeMocks();
+    //return normalized.find(q => q.id === id) ?? null;
+    return [];
   }
 }
 

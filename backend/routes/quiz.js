@@ -17,10 +17,10 @@ router.get("/:id", async (req, res) => {
     id: quiz.id,
     title: quiz.title,
     description: quiz.description,
-    questions: quiz.questions.map(({ id, text, options }) => ({
+    questions: quiz.questions.map(({ id, text, answers }) => ({
       id,
       text,
-      options,
+      answers,
     })),
   };
   res.json(sanitized);
@@ -34,17 +34,18 @@ router.post("/:quizId/answer", async (req, res) => {
     return res.status(400).json({ error: "questionId and selectedIndex are required" });
   }
 
-  const quiz = await getQuizById(req.params.id);
+  const quiz = await getQuizById(req.params.quizId);
   if (!quiz) return res.status(404).json({ error: "Quiz not found" });
 
   const question = quiz.questions.find((q) => q.id === questionId);
   if (!question) return res.status(404).json({ error: "Question not found" });
 
-  const correct = selectedIndex === question.correctIndex;
+  const correctAnswer = question.answers.find(a => a.is_correct);
+  const correct = selectedIndex === correctAnswer?.id;
 
   res.json({
     correct,
-    correctIndex: question.correctIndex,
+    correctIndex: correctAnswer?.id,
     explanation: question.explanation,
   });
 });

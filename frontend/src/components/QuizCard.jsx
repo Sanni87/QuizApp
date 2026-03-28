@@ -126,11 +126,11 @@ export default function QuizCard({ quizId, question, index, total, onNext }) {
       </p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-        {question.options.map((opt, idx) => (
+        {question.answers.map((opt, idx) => (
           <button
-            key={idx}
-            style={getOptionStyle(idx)}
-            onClick={() => handleSelect(idx)}
+            key={opt.id}
+            style={getOptionStyle(opt.id)}
+            onClick={() => handleSelect(opt.id)}
             onMouseEnter={(e) => {
               if (selected === null) {
                 e.currentTarget.style.borderColor = "var(--accent)";
@@ -144,8 +144,8 @@ export default function QuizCard({ quizId, question, index, total, onNext }) {
               }
             }}
           >
-            {getIcon(idx)}
-            {opt}
+            {getIcon(opt.id)}
+            {opt.text}
           </button>
         ))}
       </div>
