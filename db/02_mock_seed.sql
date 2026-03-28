@@ -37,7 +37,7 @@ INSERT INTO questions (id, quiz_id, text, explanation, order_index) VALUES
    '`Promise.all` espera a que TODAS resuelvan y devuelve un array con sus valores en el mismo orden. Si cualquiera rechaza, rechaza inmediatamente (fail-fast).',
    5);
 
-INSERT INTO options (question_id, text, is_correct, order_index) VALUES
+INSERT INTO answers (question_id, text, is_correct, order_index) VALUES
   -- js-basics_q1
   ('js-basics_q1', 'No hay diferencia',                                                              FALSE, 1),
   ('js-basics_q1', '`let` tiene scope de bloque, `var` tiene scope de función',                      TRUE,  2),
@@ -82,7 +82,7 @@ INSERT INTO questions (id, quiz_id, text, explanation, order_index) VALUES
    '`useMemo` cachea el resultado de una función costosa y solo la recalcula si cambian sus dependencias. `useCallback` hace lo mismo pero para funciones (no su resultado).',
    3);
 
-INSERT INTO options (question_id, text, is_correct, order_index) VALUES
+INSERT INTO answers (question_id, text, is_correct, order_index) VALUES
   -- react-basics_q1
   ('react-basics_q1', 'En cada render',                    FALSE, 1),
   ('react-basics_q1', 'Solo al montar el componente',      TRUE,  2),
@@ -113,7 +113,7 @@ INSERT INTO questions (id, quiz_id, text, explanation, order_index) VALUES
    '`app.use()` monta middleware para cualquier método HTTP y también hace prefix matching de rutas. `app.get()` es específico del método GET y requiere match exacto de ruta.',
    2);
 
-INSERT INTO options (question_id, text, is_correct, order_index) VALUES
+INSERT INTO answers (question_id, text, is_correct, order_index) VALUES
   -- node-express_q1
   ('node-express_q1', 'Una base de datos en memoria',                                                         FALSE, 1),
   ('node-express_q1', 'Funciones que tienen acceso a req, res y next en el ciclo request-response',           TRUE,  2),
