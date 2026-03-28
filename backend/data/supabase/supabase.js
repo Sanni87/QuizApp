@@ -1,0 +1,148 @@
+// backend/db/supabase.js
+// ============================================================
+// Cliente Supabase + capa de acceso a datos
+// con fallback automático a mocks si Supabase no está disponible
+// ============================================================
+
+import { createClient } from '@supabase/supabase-js';
+import { quizzes as mockQuizzes } from '../mocks';
+
+// --- Inicialización -----------------------------------------------------------
+const supabaseUrl  = process.env.SUPABASE_URL;
+const supabaseKey  = process.env.SUPABASE_SERVICE_KEY;
+
+// El cliente es null si no hay variables de entorno → usa mocks
+const supabase = (supabaseUrl && supabaseKey)
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
+
+if (!supabase) {
+  console.warn('[DB] Variables SUPABASE_URL / SUPABASE_ANON_KEY no encontradas → usando mocks');
+}
+
+// --- Helpers ------------------------------------------------------------------
+
+/**
+ * Convierte una fila de Supabase al formato que espera el frontend:
+ * { id, quiz_id, text, explanation, order_index, options: [...] }
+ * → { id, text, explanation, options: [{ id, text, is_correct }] }
+ */
+function formatQuestion(q) {
+  return {
+    id:          q.id,
+    text:        q.text,
+    explanation: q.explanation ?? null,
+    options:     (q.options ?? [])
+                   .sort((a, b) => a.order_index - b.order_index)
+                   .map(o => ({
+                     id:         o.id,
+                     text:       o.text,
+                     is_correct: o.is_correct,
+                   })),
+  };
+}
+
+/**
+ * Transforma los mocks al mismo formato normalizado que devuelve Supabase,
+ * para que el resto de la app no distinga la fuente.
+ */
+function normalizeMocks() {
+  return mockQuizzes.map(quiz => ({
+    id:          quiz.id,
+    title:       quiz.title,
+    description: quiz.description ?? null,
+    questions:   (quiz.questions ?? []).map((q, qi) => ({
+      id:          `${quiz.id}_q${qi + 1}`,
+      text:        q.text,
+      explanation: q.explanation ?? null,
+      options:     q.options.map((text, i) => ({
+        id:         i + 1,
+        text,
+        is_correct: i === q.correctIndex,
+      })),
+    })),
+  }));
+}
+
+// --- API pública --------------------------------------------------------------
+
+/**
+ * Devuelve todos los quizzes con sus preguntas y opciones.
+ */
+async function getAllQuizzes() {
+  if (!supabase) return normalizeMocks();
+
+  try {
+    const { data, error } = await supabase
+      .from('quizzes')
+      .select(`
+        id, title, description, order_index,
+        questions (
+          id, text, explanation, order_index,
+          options (
+            id, text, is_correct, order_index
+          )
+        )
+      `)
+      .order('order_index');
+
+    if (error) throw error;
+
+    return data.map(quiz => ({
+      id:          quiz.id,
+      title:       quiz.title,
+      description: quiz.description,
+      questions:   (quiz.questions ?? [])
+                     .sort((a, b) => a.order_index - b.order_index)
+                     .map(formatQuestion),
+    }));
+
+  } catch (err) {
+    console.error('[DB] Error en getAllQuizzes, usando fallback a mocks:', err.message);
+    return normalizeMocks();
+  }
+}
+
+/**
+ * Devuelve un quiz por id con sus preguntas y opciones.
+ */
+async function getQuizById(id) {
+  if (!supabase) {
+    const normalized = normalizeMocks();
+    return normalized.find(q => q.id === id) ?? null;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('quizzes')
+      .select(`
+        id, title, description, order_index,
+        questions (
+          id, text, explanation, order_index,
+          options (
+            id, text, is_correct, order_index
+          )
+        )
+      `)
+      .eq('id', id)
+      .single();
+
+    if (error) throw error;
+
+    return {
+      id:          data.id,
+      title:       data.title,
+      description: data.description,
+      questions:   (data.questions ?? [])
+                     .sort((a, b) => a.order_index - b.order_index)
+                     .map(formatQuestion),
+    };
+
+  } catch (err) {
+    console.error(`[DB] Error en getQuizById(${id}), usando fallback a mocks:`, err.message);
+    const normalized = normalizeMocks();
+    return normalized.find(q => q.id === id) ?? null;
+  }
+}
+
+module.exports = { getAllQuizzes, getQuizById };
