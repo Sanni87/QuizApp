@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node --env-file-if-exists=.env index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "seed": "node --env-file-if-exists=.env ./scripts/seed-osakidetza.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.100.1",
