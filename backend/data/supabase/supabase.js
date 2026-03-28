@@ -42,36 +42,12 @@ function formatQuestion(q) {
   };
 }
 
-/**
- * Transforma los mocks al mismo formato normalizado que devuelve Supabase,
- * para que el resto de la app no distinga la fuente.
- */
-function normalizeMocks() {
-  return mockQuizzes.map(quiz => ({
-    id:          quiz.id,
-    title:       quiz.title,
-    description: quiz.description ?? null,
-    questions:   (quiz.questions ?? []).map((q, qi) => ({
-      id:          `${quiz.id}_q${qi + 1}`,
-      text:        q.text,
-      explanation: q.explanation ?? null,
-      answers:     q.answers.map((text, i) => ({
-        id:         i + 1,
-        text,
-        is_correct: i === q.correctIndex,
-      })),
-    })),
-  }));
-}
-
 // --- API pública --------------------------------------------------------------
 
 /**
  * Devuelve todos los quizzes con sus preguntas y opciones.
  */
 async function getAllQuizzes() {
-  //if (!supabase) return normalizeMocks();
-
   try {
     const { data, error } = await supabase
       .from('quizzes')
@@ -99,7 +75,7 @@ async function getAllQuizzes() {
 
   } catch (err) {
     console.error('[DB] Error en getAllQuizzes, usando fallback a mocks:', err.message);
-    return normalizeMocks();
+    return [];
   }
 }
 
@@ -107,11 +83,6 @@ async function getAllQuizzes() {
  * Devuelve un quiz por id con sus preguntas y opciones.
  */
 async function getQuizById(id) {
-  // if (!supabase) {
-  //   const normalized = normalizeMocks();
-  //   return normalized.find(q => q.id === id) ?? null;
-  // }
-
   try {
     const { data, error } = await supabase
       .from('quizzes')
@@ -140,8 +111,6 @@ async function getQuizById(id) {
 
   } catch (err) {
     console.error(`[DB] Error en getQuizById(${id})`, err.message);
-    // const normalized = normalizeMocks();
-    //return normalized.find(q => q.id === id) ?? null;
     return [];
   }
 }
