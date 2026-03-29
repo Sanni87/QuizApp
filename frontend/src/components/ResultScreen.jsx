@@ -1,4 +1,6 @@
+
 import React from "react";
+import "./ResultScreen.css";
 
 export default function ResultScreen({ score, total, onRestart, onHome }) {
   const pct = Math.round((score / total) * 100);
@@ -17,8 +19,8 @@ export default function ResultScreen({ score, total, onRestart, onHome }) {
   const dashOffset = circumference - (pct / 100) * circumference;
 
   return (
-    <div style={{ textAlign: "center", animation: "fadeUp 0.4s ease both" }}>
-      <svg width="140" height="140" viewBox="0 0 140 140" style={{ marginBottom: "1.5rem" }}>
+    <div className="resultscreen-container">
+      <svg width="140" height="140" viewBox="0 0 140 140" className="resultscreen-svg">
         <circle cx="70" cy="70" r="52" fill="none" stroke="var(--border)" strokeWidth="6" />
         <circle
           cx="70" cy="70" r="52"
@@ -48,26 +50,15 @@ export default function ResultScreen({ score, total, onRestart, onHome }) {
         </text>
       </svg>
 
-      <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: "2.2rem", fontWeight: 800, marginBottom: "0.4rem" }}>
+      <h2 className="resultscreen-title">
         {text}
       </h2>
-      <p style={{ color: "var(--text-muted)", marginBottom: "2.5rem", fontSize: "1rem" }}>{sub}</p>
+      <p className="resultscreen-sub">{sub}</p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
         <button
           onClick={onRestart}
-          style={{
-            width: "100%",
-            padding: "0.9rem",
-            background: "var(--accent)",
-            color: "#0e0e0f",
-            borderRadius: "var(--radius-sm)",
-            fontFamily: "Syne, sans-serif",
-            fontWeight: 700,
-            fontSize: "0.95rem",
-            letterSpacing: "0.03em",
-            transition: "background 0.2s",
-          }}
+          className="resultscreen-btn primary"
           onMouseEnter={(e) => (e.currentTarget.style.background = "var(--accent-dark)")}
           onMouseLeave={(e) => (e.currentTarget.style.background = "var(--accent)")}
         >
@@ -75,18 +66,7 @@ export default function ResultScreen({ score, total, onRestart, onHome }) {
         </button>
         <button
           onClick={onHome}
-          style={{
-            width: "100%",
-            padding: "0.9rem",
-            background: "transparent",
-            color: "var(--text-muted)",
-            borderRadius: "var(--radius-sm)",
-            border: "1.5px solid var(--border)",
-            fontFamily: "Syne, sans-serif",
-            fontWeight: 600,
-            fontSize: "0.95rem",
-            transition: "all 0.2s",
-          }}
+          className="resultscreen-btn secondary"
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--text-muted)"; e.currentTarget.style.color = "var(--text)"; }}
           onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; }}
         >

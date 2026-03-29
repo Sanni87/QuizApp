@@ -1,0 +1,97 @@
+/* QuizCard styles */
+.quizcard-question {
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+.quizcard-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.quizcard-option {
+  width: 100%;
+  text-align: left;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--bg2);
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: 'DM Sans', sans-serif;
+}
+.quizcard-option.correct {
+  border: 1.5px solid var(--correct);
+  background: var(--correct-bg);
+  color: var(--correct);
+}
+.quizcard-option.wrong {
+  border: 1.5px solid var(--wrong);
+  background: var(--wrong-bg);
+  color: var(--wrong);
+}
+.quizcard-option.selected {
+  border: 1.5px solid var(--accent);
+  opacity: 0.6;
+}
+.quizcard-option.inactive {
+  opacity: 0.4;
+}
+.quizcard-icon {
+  min-width: 1.6rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-family: Syne, sans-serif;
+  font-weight: 700;
+}
+.quizcard-feedback {
+  margin-top: 1.25rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--correct);
+  background: var(--correct-bg);
+  animation: fadeUp 0.3s ease both;
+}
+.quizcard-feedback.wrong {
+  border: 1.5px solid var(--wrong);
+  background: var(--wrong-bg);
+}
+.quizcard-feedback-title {
+  font-family: Syne, sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.04em;
+}
+.quizcard-feedback-text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+.quizcard-next-btn {
+  margin-top: 1.25rem;
+  width: 100%;
+  padding: 0.9rem;
+  background: var(--accent);
+  color: #0e0e0f;
+  border-radius: var(--radius-sm);
+  font-family: Syne, sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+  transition: background 0.2s;
+  animation: fadeUp 0.3s 0.1s ease both;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}

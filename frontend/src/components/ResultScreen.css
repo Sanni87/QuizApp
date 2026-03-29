@@ -1,0 +1,40 @@
+/* ResultScreen styles */
+.resultscreen-container {
+  text-align: center;
+  animation: fadeUp 0.4s ease both;
+}
+.resultscreen-svg {
+  margin-bottom: 1.5rem;
+}
+.resultscreen-title {
+  font-family: Syne, sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+}
+.resultscreen-sub {
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+  font-size: 1rem;
+}
+.resultscreen-btn {
+  width: 100%;
+  padding: 0.9rem;
+  border-radius: var(--radius-sm);
+  font-family: Syne, sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+  transition: background 0.2s;
+}
+.resultscreen-btn.primary {
+  background: var(--accent);
+  color: #0e0e0f;
+}
+.resultscreen-btn.secondary {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1.5px solid var(--border);
+  font-weight: 600;
+  transition: all 0.2s;
+}

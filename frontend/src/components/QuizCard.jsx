@@ -1,4 +1,6 @@
+
 import React, { useState } from "react";
+import "./QuizCard.css";
 
 const API = import.meta.env.VITE_API_URL ?? "/api";
 
@@ -27,109 +29,41 @@ export default function QuizCard({ quizId, question, index, total, onNext }) {
     }
   };
 
-  const getOptionStyle = (idx) => {
-    const base = {
-      width: "100%",
-      textAlign: "left",
-      padding: "1rem 1.25rem",
-      borderRadius: "var(--radius-sm)",
-      border: "1.5px solid var(--border)",
-      background: "var(--bg2)",
-      color: "var(--text)",
-      fontSize: "0.95rem",
-      lineHeight: 1.5,
-      cursor: selected !== null ? "default" : "pointer",
-      transition: "all 0.2s ease",
-      display: "flex",
-      alignItems: "center",
-      gap: "0.75rem",
-      fontFamily: "'DM Sans', sans-serif",
-    };
-
-    if (selected === null) {
-      return {
-        ...base,
-        ":hover": { borderColor: "var(--accent)" },
-      };
-    }
-
+  const getOptionClass = (idx) => {
+    let cls = "quizcard-option";
     if (result) {
-      if (idx === result.correctIndex) {
-        return { ...base, border: "1.5px solid var(--correct)", background: "var(--correct-bg)", color: "var(--correct)" };
-      }
-      if (idx === selected && !result.correct) {
-        return { ...base, border: "1.5px solid var(--wrong)", background: "var(--wrong-bg)", color: "var(--wrong)" };
-      }
+      if (idx === result.correctIndex) return cls + " correct";
+      if (idx === selected && !result.correct) return cls + " wrong";
     }
-
-    if (idx === selected) {
-      return { ...base, border: "1.5px solid var(--accent)", opacity: 0.6 };
-    }
-
-    return { ...base, opacity: 0.4 };
+    if (idx === selected) return cls + " selected";
+    if (selected !== null) return cls + " inactive";
+    return cls;
   };
 
   const getIcon = (idx) => {
     if (!result || selected === null) {
       const letters = ["A", "B", "C", "D"];
       return (
-        <span style={{
-          minWidth: "1.6rem",
-          height: "1.6rem",
-          borderRadius: "50%",
-          border: "1.5px solid var(--border)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "0.75rem",
-          fontFamily: "Syne, sans-serif",
-          fontWeight: 700,
-          color: "var(--text-muted)",
-        }}>
-          {letters[idx]}
-        </span>
+        <span className="quizcard-icon">{letters[idx]}</span>
       );
     }
-    if (idx === result.correctIndex) return <span style={{ minWidth: "1.6rem", textAlign: "center" }}>✓</span>;
-    if (idx === selected && !result.correct) return <span style={{ minWidth: "1.6rem", textAlign: "center" }}>✗</span>;
+    if (idx === result.correctIndex) return <span className="quizcard-icon">✓</span>;
+    if (idx === selected && !result.correct) return <span className="quizcard-icon">✗</span>;
     const letters = ["A", "B", "C", "D"];
     return (
-      <span style={{
-        minWidth: "1.6rem",
-        height: "1.6rem",
-        borderRadius: "50%",
-        border: "1.5px solid var(--border)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: "0.75rem",
-        fontFamily: "Syne, sans-serif",
-        fontWeight: 700,
-        color: "var(--text-muted)",
-        opacity: 0.4,
-      }}>
-        {letters[idx]}
-      </span>
+      <span className="quizcard-icon" style={{ opacity: 0.4 }}>{letters[idx]}</span>
     );
   };
 
   return (
     <div style={{ animation: "fadeUp 0.35s ease both" }}>
-      <p style={{
-        fontSize: "1.15rem",
-        fontWeight: 500,
-        marginBottom: "1.5rem",
-        lineHeight: 1.55,
-        color: "var(--text)",
-      }}>
-        {question.text}
-      </p>
+      <p className="quizcard-question">{question.text}</p>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+      <div className="quizcard-options">
         {question.answers.map((opt, idx) => (
           <button
             key={opt.id}
-            style={getOptionStyle(opt.id)}
+            className={getOptionClass(opt.id)}
             onClick={() => handleSelect(opt.id)}
             onMouseEnter={(e) => {
               if (selected === null) {
@@ -157,25 +91,11 @@ export default function QuizCard({ quizId, question, index, total, onNext }) {
       )}
 
       {result && (
-        <div style={{
-          marginTop: "1.25rem",
-          padding: "1rem 1.25rem",
-          borderRadius: "var(--radius-sm)",
-          border: `1.5px solid ${result.correct ? "var(--correct)" : "var(--wrong)"}`,
-          background: result.correct ? "var(--correct-bg)" : "var(--wrong-bg)",
-          animation: "fadeUp 0.3s ease both",
-        }}>
-          <p style={{
-            fontFamily: "Syne, sans-serif",
-            fontWeight: 700,
-            fontSize: "0.85rem",
-            color: result.correct ? "var(--correct)" : "var(--wrong)",
-            marginBottom: "0.4rem",
-            letterSpacing: "0.04em",
-          }}>
+        <div className={`quizcard-feedback${result.correct ? '' : ' wrong'}`}>
+          <p className="quizcard-feedback-title" style={{ color: result.correct ? "var(--correct)" : "var(--wrong)" }}>
             {result.correct ? "✓ CORRECTO" : "✗ INCORRECTO"}
           </p>
-          <p style={{ fontSize: "0.9rem", color: "var(--text-muted)", lineHeight: 1.55 }}>
+          <p className="quizcard-feedback-text">
             {result.explanation}
           </p>
         </div>
@@ -184,22 +104,7 @@ export default function QuizCard({ quizId, question, index, total, onNext }) {
       {result && (
         <button
           onClick={() => onNext(result?.correct)}
-          style={{
-            marginTop: "1.25rem",
-            width: "100%",
-            padding: "0.9rem",
-            background: "var(--accent)",
-            color: "#0e0e0f",
-            borderRadius: "var(--radius-sm)",
-            fontFamily: "Syne, sans-serif",
-            fontWeight: 700,
-            fontSize: "0.95rem",
-            letterSpacing: "0.03em",
-            transition: "background 0.2s",
-            animation: "fadeUp 0.3s 0.1s ease both",
-            opacity: 0,
-            animationFillMode: "forwards",
-          }}
+          className="quizcard-next-btn"
           onMouseEnter={(e) => (e.currentTarget.style.background = "var(--accent-dark)")}
           onMouseLeave={(e) => (e.currentTarget.style.background = "var(--accent)")}
         >

@@ -1,0 +1,35 @@
+/* ProgressBar styles */
+.progress-bar-container {
+  margin-bottom: 2rem;
+}
+.progress-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.progress-bar-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: Syne, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.progress-bar-percent {
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-family: Syne, sans-serif;
+  font-weight: 700;
+}
+.progress-bar-track {
+  height: 3px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
