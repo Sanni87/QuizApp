@@ -1,0 +1,22 @@
+/* Header styles */
+.header {
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-title {
+  font-family: Syne, sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  cursor: pointer;
+  letter-spacing: -0.02em;
+}
+.header-accent {
+  color: var(--accent);
+}
+.header-quiz-title {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: Syne, sans-serif;
+}

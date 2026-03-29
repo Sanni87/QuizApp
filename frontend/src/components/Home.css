@@ -1,0 +1,73 @@
+/* Home styles */
+.home-title {
+  font-family: Syne, sans-serif;
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.03em;
+}
+.home-title-accent {
+  color: var(--accent);
+}
+.home-desc {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+.home-error {
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--wrong);
+  background: var(--wrong-bg);
+  color: var(--wrong);
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+.home-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.home-btn {
+  text-align: left;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  background: var(--bg2);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.home-btn:hover {
+  border-color: var(--accent);
+  background: var(--bg3);
+}
+.home-btn-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.home-btn-title {
+  font-family: Syne, sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 0.3rem;
+}
+.home-btn-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.home-btn-count {
+  min-width: fit-content;
+  padding: 0.25rem 0.6rem;
+  border-radius: 99px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+  font-family: Syne, sans-serif;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}

@@ -1,22 +1,18 @@
+
 import React from "react";
+import "./Header.css";
 
 export default function Header({ view, activeQuiz, onHome }) {
   return (
-    <header style={{ marginBottom: "3rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <header className="header">
       <span
         onClick={onHome}
-        style={{
-          fontFamily: "Syne, sans-serif",
-          fontWeight: 800,
-          fontSize: "1.1rem",
-          cursor: "pointer",
-          letterSpacing: "-0.02em",
-        }}
+        className="header-title"
       >
-        QUIZ<span style={{ color: "var(--accent)" }}>.</span>
+        QUIZ<span className="header-accent">.</span>
       </span>
       {view === "quiz" && activeQuiz && (
-        <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontFamily: "Syne, sans-serif" }}>
+        <span className="header-quiz-title">
           {activeQuiz.title}
         </span>
       )}
