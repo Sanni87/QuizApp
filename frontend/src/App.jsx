@@ -3,6 +3,8 @@ import ProgressBar from "./components/ProgressBar";
 import QuizCard from "./components/QuizCard";
 import ResultScreen from "./components/ResultScreen";
 import Home from "./components/Home";
+import Quiz from "./components/Quiz";
+import Header from "./components/Header";
 
 const API = import.meta.env.VITE_API_URL ?? "/api";
 
@@ -63,25 +65,7 @@ export default function App() {
       background: "var(--bg)",
     }}>
       <div style={{ width: "100%", maxWidth: "560px" }}>
-        <header style={{ marginBottom: "3rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span
-            onClick={() => setView(VIEWS.HOME)}
-            style={{
-              fontFamily: "Syne, sans-serif",
-              fontWeight: 800,
-              fontSize: "1.1rem",
-              cursor: "pointer",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            QUIZ<span style={{ color: "var(--accent)" }}>.</span>
-          </span>
-          {view === VIEWS.QUIZ && activeQuiz && (
-            <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", fontFamily: "Syne, sans-serif" }}>
-              {activeQuiz.title}
-            </span>
-          )}
-        </header>
+        <Header view={view.replace(/^[a-z]+\./, "")} activeQuiz={activeQuiz} onHome={() => setView(VIEWS.HOME)} />
         {children}
       </div>
     </div>
@@ -101,19 +85,12 @@ export default function App() {
 
   // ── QUIZ ──────────────────────────────────────────────────────────────────
   if (view === VIEWS.QUIZ && activeQuiz) {
-    const question = activeQuiz.questions[questionIndex];
     return shell(
-      <>
-        <ProgressBar current={questionIndex + 1} total={activeQuiz.questions.length} />
-        <QuizCard
-          key={question.id}
-          quizId={activeQuiz.id}
-          question={question}
-          index={questionIndex}
-          total={activeQuiz.questions.length}
-          onNext={(wasCorrect) => handleNext(wasCorrect)}
-        />
-      </>
+      <Quiz
+        activeQuiz={activeQuiz}
+        questionIndex={questionIndex}
+        handleNext={handleNext}
+      />
     );
   }
 
