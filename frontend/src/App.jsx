@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from "react";
-import ProgressBar from "./components/ProgressBar";
-import QuizCard from "./components/QuizCard";
+import { useState, useEffect } from "react";
 import ResultScreen from "./components/ResultScreen";
 import Home from "./components/Home";
 import Quiz from "./components/Quiz";

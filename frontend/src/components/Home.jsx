@@ -1,5 +1,3 @@
-
-import React from "react";
 import "./Home.css";
 
 export default function Home({ quizList, loadingQuiz, error, startQuiz }) {
