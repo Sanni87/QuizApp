@@ -5,6 +5,7 @@ import ResultScreen from "./components/ResultScreen";
 import Home from "./components/Home";
 import Quiz from "./components/Quiz";
 import Header from "./components/Header";
+import "./App.css";
 
 const API = import.meta.env.VITE_API_URL ?? "/api";
 
@@ -55,16 +56,8 @@ export default function App() {
   };
 
   const shell = (children) => (
-    <div style={{
-      minHeight: "100vh",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "flex-start",
-      padding: "2rem 1rem",
-      background: "var(--bg)",
-    }}>
-      <div style={{ width: "100%", maxWidth: "560px" }}>
+    <div className="app-shell">
+      <div className="app-shell-inner">
         <Header view={view.replace(/^[a-z]+\./, "")} activeQuiz={activeQuiz} onHome={() => setView(VIEWS.HOME)} />
         {children}
       </div>
