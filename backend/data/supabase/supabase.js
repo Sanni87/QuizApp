@@ -5,7 +5,6 @@
 // ============================================================
 
 import { createClient } from '@supabase/supabase-js';
-import { quizzes as mockQuizzes } from '../mocks.js';
 
 // --- Inicialización -----------------------------------------------------------
 const supabaseUrl  = process.env.SUPABASE_URL;
@@ -60,7 +59,7 @@ async function getAllQuizzes() {
           )
         )
       `)
-      .order('order_index');
+      .order('order_index', { ascending: false });
 
     if (error) throw error;
 
