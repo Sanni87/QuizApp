@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import "./AdvancedSetup.css";
 
-export default function AdvancedSetup({ onStart, onBack }) {
-  const [quizzes, setQuizzes] = useState([]);
+const API = import.meta.env.VITE_API_URL ?? "/api";
+
+export default function AdvancedSetup({ quizList, onStart, onBack }) {
   const [selectedQuizId, setSelectedQuizId] = useState("");
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [mode, setMode] = useState("range"); // "range" | "exact"
@@ -19,16 +20,9 @@ export default function AdvancedSetup({ onStart, onBack }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/quizzes")
-      .then((res) => res.json())
-      .then((data) => setQuizzes(data))
-      .catch(() => setError("No se pudieron cargar los tests."));
-  }, []);
-
-  useEffect(() => {
     if (!selectedQuizId) return;
     setLoadingQuiz(true);
-    fetch(`/api/quizzes/${selectedQuizId}`)
+    fetch(`${API}/quizzes/${selectedQuizId}`)
       .then((res) => res.json())
       .then((data) => {
         const total = data.questions?.length ?? 0;
@@ -116,7 +110,7 @@ export default function AdvancedSetup({ onStart, onBack }) {
           }}
         >
           <option value="">— Elige un test —</option>
-          {quizzes.map((q) => (
+          {quizList.map((q) => (
             <option key={q.id} value={q.id}>
               {q.title}
             </option>

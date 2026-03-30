@@ -95,6 +95,7 @@ export default function App() {
   if (view === VIEWS.ADVANCED) {
     return shell(
       <AdvancedSetup
+        quizList={quizList}
         onStart={handleAdvancedStart}
         onBack={() => setView(VIEWS.HOME)}
       />
