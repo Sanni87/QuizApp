@@ -18,11 +18,11 @@ export default function Home({ quizList, loadingQuiz, error, startQuiz, onAdvanc
         <div className="home-error">{error}</div>
       )}
 
-      {!error && (
-        <AdvancedButton onClick={() => onAdvancedClick()} />
-      )}
-
       <div className="home-list">
+        {!error && (
+          <AdvancedButton onClick={() => onAdvancedClick()} />
+        )}
+
         {quizList.length === 0 && !error && (
           <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Cargando tests...</p>
         )}

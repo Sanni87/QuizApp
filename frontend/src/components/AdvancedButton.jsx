@@ -2,13 +2,14 @@ import "./AdvancedButton.css";
 
 export default function AdvancedButton({ onClick }) {
   return (
-    <button className="advanced-button" onClick={onClick}>
-      <span className="advanced-button__icon">⚙️</span>
-      <span className="advanced-button__text">
-        <strong>Modo Avanzado</strong>
-        <small>Elige las preguntas exactas que quieres practicar</small>
-      </span>
-      <span className="advanced-button__arrow">→</span>
+    <button className="home-btn" style={{background: "darkgray"}} onClick={onClick}>
+      <div className="home-btn-content">
+        <div>
+          <p className="home-btn-title" style={{color: "#111111"}}>⚙️ Modo Avanzado</p>
+          <p className="home-btn-desc" style={{color: "#333333"}}>Elige las preguntas exactas que quieres practicar</p>
+        </div>
+        <span className="home-btn-count">→</span>
+      </div>
     </button>
   );
 }
