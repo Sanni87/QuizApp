@@ -3,11 +3,12 @@ import ResultScreen from "./components/ResultScreen";
 import Home from "./components/Home";
 import Quiz from "./components/Quiz";
 import Header from "./components/Header";
+import AdvancedSetup from "./components/AdvancedSetup";
 import "./App.css";
 
 const API = import.meta.env.VITE_API_URL ?? "/api";
 
-const VIEWS = { HOME: "home", QUIZ: "quiz", RESULT: "result" };
+const VIEWS = { HOME: "home", QUIZ: "quiz", RESULT: "result", ADVANCED: "advanced" };
 
 export default function App() {
   const [view, setView] = useState(VIEWS.HOME);
@@ -15,9 +16,9 @@ export default function App() {
   const [activeQuiz, setActiveQuiz] = useState(null);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [lastWasCorrect, setLastWasCorrect] = useState(null);
   const [loadingQuiz, setLoadingQuiz] = useState(false);
   const [error, setError] = useState(null);
+  const [quizConfig, setQuizConfig] = useState(null);
 
   useEffect(() => {
     fetch(`${API}/quizzes`)
@@ -26,6 +27,7 @@ export default function App() {
       .catch(() => setError("No se pudo cargar los tests. ¿Está el backend corriendo?"));
   }, []);
 
+  // Inicio normal desde la Home: todas las preguntas
   const startQuiz = async (id) => {
     setLoadingQuiz(true);
     setError(null);
@@ -33,6 +35,29 @@ export default function App() {
       const res = await fetch(`${API}/quizzes/${id}`);
       const data = await res.json();
       setActiveQuiz(data);
+      setQuizConfig(null); // sin filtro
+      setQuestionIndex(0);
+      setScore(0);
+      setView(VIEWS.QUIZ);
+    } catch {
+      setError("Error cargando el quiz. Intenta de nuevo.");
+    } finally {
+      setLoadingQuiz(false);
+    }
+  };
+
+  // Inicio desde Modo Avanzado: preguntas filtradas por índices (1-based)
+  const handleAdvancedStart = async ({ quizId, questionIndices }) => {
+    setLoadingQuiz(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API}/quizzes/${quizId}`);
+      const data = await res.json();
+      const filteredQuestions = data.questions.filter((_, i) =>
+        questionIndices.includes(i + 1)
+      );
+      setActiveQuiz({ ...data, questions: filteredQuestions });
+      setQuizConfig({ quizId, questionIndices });
       setQuestionIndex(0);
       setScore(0);
       setView(VIEWS.QUIZ);
@@ -56,21 +81,38 @@ export default function App() {
   const shell = (children) => (
     <div className="app-shell">
       <div className="app-shell-inner">
-        <Header view={view.replace(/^[a-z]+\./, "")} activeQuiz={activeQuiz} onHome={() => setView(VIEWS.HOME)} />
+        <Header
+          view={view.replace(/^[a-z]+\./, "")}
+          activeQuiz={activeQuiz}
+          onHome={() => setView(VIEWS.HOME)}
+        />
         {children}
       </div>
     </div>
   );
 
+  // ── ADVANCED ──────────────────────────────────────────────────────────────
+  if (view === VIEWS.ADVANCED) {
+    return shell(
+      <AdvancedSetup
+        onStart={handleAdvancedStart}
+        onBack={() => setView(VIEWS.HOME)}
+      />
+    );
+  }
+
   // ── HOME ──────────────────────────────────────────────────────────────────
   if (view === VIEWS.HOME) {
     return shell(
-      <Home
-        quizList={quizList}
-        loadingQuiz={loadingQuiz}
-        error={error}
-        startQuiz={startQuiz}
-      />
+      <>
+        <Home
+          quizList={quizList}
+          loadingQuiz={loadingQuiz}
+          error={error}
+          startQuiz={startQuiz}
+          onAdvancedClick={() => setView(VIEWS.ADVANCED)}
+        />
+      </>
     );
   }
 
@@ -91,7 +133,11 @@ export default function App() {
       <ResultScreen
         score={score}
         total={activeQuiz.questions.length}
-        onRestart={() => startQuiz(activeQuiz.id)}
+        onRestart={() =>
+          quizConfig
+            ? handleAdvancedStart(quizConfig)
+            : startQuiz(activeQuiz.id)
+        }
         onHome={() => setView(VIEWS.HOME)}
       />
     );
