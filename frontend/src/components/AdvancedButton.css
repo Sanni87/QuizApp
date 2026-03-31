@@ -1,49 +1,52 @@
+/* AdvancedButton — self-contained styles (BEM) */
+
 .advanced-button {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-  padding: 1rem 1.2rem;
-  background: #f5f7ff;
-  border: 1.5px solid #c5d0fa;
-  border-radius: 10px;
-  cursor: pointer;
   text-align: left;
-  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
-  margin-top: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  background: darkgray;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  width: 100%;
 }
 
 .advanced-button:hover {
-  background: #eaedff;
-  border-color: #4a6cf7;
-  box-shadow: 0 2px 8px rgba(74, 108, 247, 0.15);
+  border-color: var(--accent);
+  background: #b5b5b5;
 }
 
-.advanced-button__icon {
-  font-size: 1.4rem;
-  flex-shrink: 0;
-}
-
-.advanced-button__text {
-  flex: 1;
+.advanced-button__content {
   display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
 }
 
-.advanced-button__text strong {
-  font-size: 1rem;
-  color: #222;
+.advanced-button__title {
+  font-family: Syne, sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 0.3rem;
+  color: #111;
 }
 
-.advanced-button__text small {
-  font-size: 0.82rem;
-  color: #666;
-  font-weight: normal;
+.advanced-button__desc {
+  font-size: 0.85rem;
+  color: #333;
 }
 
 .advanced-button__arrow {
-  color: #4a6cf7;
-  font-size: 1.1rem;
-  flex-shrink: 0;
+  min-width: fit-content;
+  padding: 0.25rem 0.6rem;
+  border-radius: 99px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+  font-family: Syne, sans-serif;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
