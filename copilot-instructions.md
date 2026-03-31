@@ -179,3 +179,7 @@ npm run dev       # Vite → puerto 5173
 ```
 
 El proxy de Vite redirige `/api/*` → `http://localhost:3001`, evitando CORS en desarrollo.
+
+## Notas del entorno
+
+- **No hay Chrome instalado** en la máquina de desarrollo. Si necesitas verificar cambios visuales en el navegador (capturas de pantalla, comprobaciones automáticas con browser), sáltate ese paso en lugar de intentarlo.
