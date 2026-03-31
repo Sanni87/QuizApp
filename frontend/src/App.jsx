@@ -19,6 +19,7 @@ export default function App() {
   const [loadingQuiz, setLoadingQuiz] = useState(false);
   const [error, setError] = useState(null);
   const [quizConfig, setQuizConfig] = useState(null);
+  const [currentFailedIndices, setCurrentFailedIndices] = useState([]);
 
   useEffect(() => {
     fetch(`${API}/quizzes`)
@@ -34,10 +35,12 @@ export default function App() {
     try {
       const res = await fetch(`${API}/quizzes/${id}`);
       const data = await res.json();
+      data.questions = data.questions.map((q, i) => ({ ...q, originalIndex: i + 1 }));
       setActiveQuiz(data);
       setQuizConfig(null); // sin filtro
       setQuestionIndex(0);
       setScore(0);
+      setCurrentFailedIndices([]);
       setView(VIEWS.QUIZ);
     } catch {
       setError("Error cargando el quiz. Intenta de nuevo.");
@@ -53,13 +56,15 @@ export default function App() {
     try {
       const res = await fetch(`${API}/quizzes/${quizId}`);
       const data = await res.json();
-      const filteredQuestions = data.questions.filter((_, i) =>
-        questionIndices.includes(i + 1)
+      data.questions = data.questions.map((q, i) => ({ ...q, originalIndex: i + 1 }));
+      const filteredQuestions = data.questions.filter((q) =>
+        questionIndices.includes(q.originalIndex)
       );
       setActiveQuiz({ ...data, questions: filteredQuestions });
       setQuizConfig({ quizId, questionIndices });
       setQuestionIndex(0);
       setScore(0);
+      setCurrentFailedIndices([]);
       setView(VIEWS.QUIZ);
     } catch {
       setError("Error cargando el quiz. Intenta de nuevo.");
@@ -69,12 +74,49 @@ export default function App() {
   };
 
   const handleNext = (wasCorrect) => {
-    if (wasCorrect) setScore((s) => s + 1);
+    const failedIndex = activeQuiz.questions[questionIndex].originalIndex;
+    let newFailedIndices = currentFailedIndices;
+
+    if (!wasCorrect) {
+      if (!currentFailedIndices.includes(failedIndex)) {
+        newFailedIndices = [...currentFailedIndices, failedIndex];
+        setCurrentFailedIndices(newFailedIndices);
+      }
+    } else {
+      setScore((s) => s + 1);
+    }
+
     const nextIndex = questionIndex + 1;
     if (nextIndex >= activeQuiz.questions.length) {
+      if (newFailedIndices.length > 0) {
+        saveAttemptToStorage(activeQuiz.id, newFailedIndices);
+      }
       setView(VIEWS.RESULT);
     } else {
       setQuestionIndex(nextIndex);
+    }
+  };
+
+  const saveAttemptToStorage = (quizId, failedIndices) => {
+    try {
+      const stored = localStorage.getItem("quiz_failed_attempts");
+      const history = stored ? JSON.parse(stored) : {};
+      
+      if (!history[quizId]) {
+        history[quizId] = [];
+      }
+      
+      history[quizId].unshift({
+        date: new Date().toISOString(),
+        indices: failedIndices
+      });
+      
+      // Keep only last 3
+      history[quizId] = history[quizId].slice(0, 3);
+      
+      localStorage.setItem("quiz_failed_attempts", JSON.stringify(history));
+    } catch (e) {
+      console.error("No se pudo guardar el intento en localStorage", e);
     }
   };
 
@@ -134,11 +176,15 @@ export default function App() {
       <ResultScreen
         score={score}
         total={activeQuiz.questions.length}
+        currentFailedIndices={currentFailedIndices}
         onRestart={() =>
           quizConfig
             ? handleAdvancedStart(quizConfig)
             : startQuiz(activeQuiz.id)
         }
+        onRetryFailed={() => {
+          handleAdvancedStart({ quizId: activeQuiz.id, questionIndices: currentFailedIndices });
+        }}
         onHome={() => setView(VIEWS.HOME)}
       />
     );

@@ -1,8 +1,7 @@
-
 import React from "react";
 import "./ResultScreen.css";
 
-export default function ResultScreen({ score, total, onRestart, onHome }) {
+export default function ResultScreen({ score, total, currentFailedIndices, onRestart, onRetryFailed, onHome }) {
   const pct = Math.round((score / total) * 100);
 
   const getMessage = () => {
@@ -56,6 +55,16 @@ export default function ResultScreen({ score, total, onRestart, onHome }) {
       <p className="resultscreen-sub">{sub}</p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        {currentFailedIndices && currentFailedIndices.length > 0 && (
+          <button
+            onClick={onRetryFailed}
+            className="resultscreen-btn retry-failed"
+            onMouseEnter={(e) => (e.currentTarget.style.background = "var(--wrong)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "var(--border)")}
+          >
+            Repasar falladas ({currentFailedIndices.length})
+          </button>
+        )}
         <button
           onClick={onRestart}
           className="resultscreen-btn primary"
