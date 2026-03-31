@@ -2,6 +2,9 @@
 
 Este archivo proporciona contexto y convenciones para asistentes de IA (Copilot, Gemini, etc.) que trabajen en el proyecto **QuizApp**.
 
+> **⚠️ REGLA OBLIGATORIA — Mantener la documentación actualizada:**
+> Si durante una sesión de trabajo realizas cambios relevantes en el proyecto (nueva funcionalidad, cambios en la estructura de ficheros, nuevas dependencias, nuevos endpoints, modificaciones en el esquema de datos, nuevas convenciones, etc.), **debes actualizar este fichero (`copilot-instructions.md`) y el `README.md`** de la raíz del proyecto para reflejar esos cambios. Esto es esencial para que la información no se pierda entre sesiones y cualquier asistente de IA que trabaje en el proyecto en el futuro tenga contexto actualizado.
+
 ## Descripción general
 
 QuizApp es una aplicación web de tests/quizzes con feedback inmediato por pregunta. Está orientada actualmente a tests de oposiciones (Osakidetza / OPE País Vasco), aunque también incluye quizzes de desarrollo web (JS, React, Node/Express) como datos de ejemplo.
