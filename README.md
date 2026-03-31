@@ -1,82 +1,160 @@
 # Quiz App
 
-Web de tests con feedback inmediato. Stack: **Express** (backend) + **React + Vite** (frontend).
+Aplicación web de **tests con feedback inmediato** por pregunta. Diseñada para preparar oposiciones (OPE Osakidetza / País Vasco) y practicar conocimientos de desarrollo web.
 
-## Estructura
+## ✨ Funcionalidades
+
+- **Listado de tests** disponibles con título, descripción y número de preguntas.
+- **Resolución interactiva**: seleccionar respuesta → feedback inmediato (correcto/incorrecto + explicación).
+- **Modo Avanzado**: elegir un rango de preguntas o seleccionar preguntas exactas por número.
+- **Pantalla de resultados**: puntuación con gráfico circular SVG animado y mensajes según rendimiento.
+- **Diseño responsive** con tema oscuro y animaciones.
+
+## 🛠️ Stack tecnológico
+
+| Capa | Tecnología |
+|------|-----------|
+| Base de datos | PostgreSQL (Supabase) |
+| Backend | Node.js + Express 4 |
+| Frontend | React 18 + Vite 5 |
+| Estilos | CSS modular (vanilla) |
+| Tipografías | Google Fonts (Syne + DM Sans) |
+
+## 📁 Estructura del proyecto
 
 ```
-quiz-app/
+QuizApp/
 ├── backend/
-│   ├── index.js          # Entry point Express
-│   ├── routes/quiz.js    # Endpoints API
-│   ├── data/mocks.js     # Tests mock (sustituir por DB)
-│   └── package.json
-└── frontend/
-    ├── src/
-    │   ├── App.jsx               # Shell + routing
-    │   ├── components/
-    │   │   ├── QuizCard.jsx      # Pregunta + opciones + feedback
-    │   │   ├── ProgressBar.jsx   # Barra de progreso
-    │   │   └── ResultScreen.jsx  # Pantalla final
-    │   └── main.jsx
-    ├── index.html
-    ├── vite.config.js    # Proxy /api → :3001
-    └── package.json
+│   ├── index.js              # Entry point Express (puerto 3001)
+│   ├── routes/quiz.js        # Endpoints de la API
+│   ├── data/
+│   │   ├── mocks.js          # Datos mock locales (fallback)
+│   │   └── supabase/
+│   │       └── supabase.js   # Cliente Supabase + capa de acceso a datos
+│   ├── scripts/              # Scripts de seed y actualización de datos
+│   └── .env                  # Variables de entorno (no versionado)
+├── db/
+│   ├── 01_schema.sql         # Esquema de base de datos (DDL + RLS)
+│   └── 02_mock_seed.sql      # Seed con datos de ejemplo
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx           # Shell principal + navegación por estado
+│   │   ├── index.css         # Variables CSS globales, resets, animaciones
+│   │   └── components/       # Componentes React (cada uno con su .css)
+│   ├── index.html            # HTML raíz
+│   └── vite.config.js        # Proxy /api → backend
+└── README.md
 ```
 
-## Setup
+## 🚀 Setup
+
+### Requisitos
+
+- Node.js 20+
+- Cuenta de [Supabase](https://supabase.com/) (o usar datos mock locales)
+
+### Base de datos
+
+1. Crea un proyecto en Supabase.
+2. Ejecuta `db/01_schema.sql` en el SQL Editor de Supabase.
+3. Ejecuta `db/02_mock_seed.sql` para insertar los tests de ejemplo.
 
 ### Backend
+
 ```bash
 cd backend
 npm install
-npm run dev       # nodemon, puerto 3001
-# o en prod:
-npm start
+```
+
+Crea un fichero `.env`:
+
+```env
+SUPABASE_URL=https://tu-proyecto.supabase.co
+SUPABASE_SERVICE_KEY=tu-service-key
+PORT=3001
+```
+
+```bash
+npm run dev       # Desarrollo (nodemon, auto-reload)
+npm start         # Producción
 ```
 
 ### Frontend
+
 ```bash
 cd frontend
 npm install
-npm run dev       # Vite, puerto 5173
+npm run dev       # Vite → http://localhost:5173
 ```
 
-El proxy de Vite redirige `/api/*` → `http://localhost:3001`, así que no hay CORS en dev.
+> El proxy de Vite redirige `/api/*` → `http://localhost:3001`, evitando problemas de CORS en desarrollo.
 
-## API
+## 📡 API
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| GET | `/api/quizzes` | Lista de tests (sin respuestas) |
-| GET | `/api/quizzes/:id` | Preguntas de un test (sin respuestas) |
-| POST | `/api/quizzes/:id/answer` | Comprueba una respuesta |
+| `GET` | `/api/quizzes` | Lista todos los tests con preguntas y opciones |
+| `GET` | `/api/quizzes/:id` | Detalle de un test (preguntas sin respuestas correctas) |
+| `POST` | `/api/quizzes/:quizId/answer` | Comprueba una respuesta |
+| `GET` | `/health` | Health check |
 
-### POST /api/quizzes/:id/answer
+### POST `/api/quizzes/:quizId/answer`
 
-Body:
+**Request body:**
+
 ```json
-{ "questionId": "q1", "selectedIndex": 1 }
+{ "questionId": "js-basics_q1", "selectedIndex": 42 }
 ```
 
-Response:
+**Response:**
+
 ```json
 {
   "correct": true,
-  "correctIndex": 1,
-  "explanation": "..."
+  "correctIndex": 42,
+  "explanation": "Texto explicativo de la respuesta..."
 }
 ```
 
-## Añadir tests
+## 🗄️ Modelo de datos
 
-Edita `backend/data/mocks.js`. Cuando integres base de datos, solo cambia esa capa — las rutas y el frontend no necesitan cambios.
+```
+quizzes
+  ├── id (PK, TEXT)
+  ├── title, description
+  └── order_index
 
-## Próximos pasos sugeridos
+questions
+  ├── id (PK, TEXT, formato: {quizId}_q{N})
+  ├── quiz_id (FK → quizzes)
+  ├── text, explanation
+  └── order_index
 
-- [ ] Integrar base de datos (PostgreSQL / MongoDB)
-- [ ] Autenticación de usuarios
-- [ ] Historial de resultados por usuario
-- [ ] Panel de administración para crear/editar tests
-- [ ] Timer por pregunta
-- [ ] Categorías y filtros
+answers
+  ├── id (PK, SERIAL)
+  ├── question_id (FK → questions)
+  ├── text, is_correct
+  └── order_index
+```
+
+Row Level Security (RLS) habilitado con política de solo lectura pública.
+
+## 📜 Scripts disponibles
+
+| Script | Comando | Descripción |
+|--------|---------|-------------|
+| Seed Osakidetza | `node scripts/seed-osakidetza.js` | Importa quiz desde JSON a Supabase |
+| Update answers | `npm run update-answers` | Actualiza respuestas correctas y explicaciones |
+
+> Los scripts requieren `SUPABASE_URL` y `SUPABASE_SECRET_KEY` en las variables de entorno.
+
+## 🎨 Diseño
+
+- **Tema oscuro** con acento amarillo-verde (`#c8f135`).
+- Tipografías: **Syne** (headings) + **DM Sans** (body text).
+- Animaciones CSS: `fadeUp`, `pop`, `shimmer`.
+- Componentes con CSS modular (un archivo `.css` por componente).
+
+## 📄 Licencia
+
+[MIT](./LICENSE) — © 2026 Sanni87
