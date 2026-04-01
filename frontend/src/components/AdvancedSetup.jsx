@@ -16,6 +16,9 @@ export default function AdvancedSetup({ quizList, onStart, onBack }) {
   const [exactInput, setExactInput] = useState("");
   const [exactError, setExactError] = useState("");
 
+  //Shuffle
+  const [shuffle, setShuffle] = useState(false);
+
   const [loadingQuiz, setLoadingQuiz] = useState(false);
   const [error, setError] = useState("");
 
@@ -74,7 +77,7 @@ export default function AdvancedSetup({ quizList, onStart, onBack }) {
 
     setError("");
     setExactError("");
-    onStart({ quizId: selectedQuizId, questionIndices });
+    onStart({ quizId: selectedQuizId, questionIndices, shuffle });
   }
 
   function handleExactChange(e) {
@@ -202,6 +205,19 @@ export default function AdvancedSetup({ quizList, onStart, onBack }) {
               </div>
             </div>
           )}
+
+          <div className="advanced-setup__shuffle">
+            <label className="advanced-setup__label" htmlFor="shuffle">
+              <input
+                id="shuffle"
+                type="checkbox"
+                className="advanced-setup__checkbox"
+                checked={shuffle}
+                onChange={(e) => setShuffle(e.target.checked)}
+              />
+              Mezclar preguntas
+            </label>
+          </div>
 
           <button className="advanced-setup__start" onClick={handleStart}>
             Iniciar test
