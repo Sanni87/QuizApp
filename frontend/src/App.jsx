@@ -210,7 +210,7 @@ export default function App() {
             : startQuiz(activeQuiz.id)
         }
         onRetryFailed={() => {
-          handleAdvancedStart({ quizId: activeQuiz.id, questionIndices: currentFailedIndices, shuffle: false, shuffleAnswers: false });
+          handleAdvancedStart({ quizId: activeQuiz.id, questionIndices: currentFailedIndices, shuffle: quizConfig?.shuffle, shuffleAnswers: quizConfig?.shuffleAnswers });
         }}
         onHome={() => setView(VIEWS.HOME)}
       />
