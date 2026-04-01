@@ -50,7 +50,7 @@ export default function App() {
   };
 
   // Inicio desde Modo Avanzado: preguntas filtradas por índices (1-based)
-  const handleAdvancedStart = async ({ quizId, questionIndices, shuffle }) => {
+  const handleAdvancedStart = async ({ quizId, questionIndices, shuffle, shuffleAnswers }) => {
     setLoadingQuiz(true);
     setError(null);
     try {
@@ -65,8 +65,12 @@ export default function App() {
         shuffleQuestions(filteredQuestions);
       }
 
+      if (shuffleAnswers) {
+        shuffleQuestionAnswers(filteredQuestions);
+      }
+
       setActiveQuiz({ ...data, questions: filteredQuestions });
-      setQuizConfig({ quizId, questionIndices, shuffle });
+      setQuizConfig({ quizId, questionIndices, shuffle, shuffleAnswers });
       setQuestionIndex(0);
       setScore(0);
       setCurrentFailedIndices([]);
@@ -145,6 +149,17 @@ export default function App() {
     }
   }
 
+  const shuffleQuestionAnswers = (filteredQuestions) => {
+    filteredQuestions.forEach(q => {
+      const allAnswers = [...q.answers];
+      for (let i = allAnswers.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [allAnswers[i], allAnswers[j]] = [allAnswers[j], allAnswers[i]];
+        }
+        q.answers = allAnswers;
+    });
+  };
+
   // ── ADVANCED ──────────────────────────────────────────────────────────────
   if (view === VIEWS.ADVANCED) {
     return shell(
@@ -195,7 +210,7 @@ export default function App() {
             : startQuiz(activeQuiz.id)
         }
         onRetryFailed={() => {
-          handleAdvancedStart({ quizId: activeQuiz.id, questionIndices: currentFailedIndices, shuffle: false });
+          handleAdvancedStart({ quizId: activeQuiz.id, questionIndices: currentFailedIndices, shuffle: false, shuffleAnswers: false });
         }}
         onHome={() => setView(VIEWS.HOME)}
       />

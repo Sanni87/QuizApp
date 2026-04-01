@@ -19,6 +19,9 @@ export default function AdvancedSetup({ quizList, onStart, onBack }) {
   //Shuffle
   const [shuffle, setShuffle] = useState(false);
 
+  //Shuffle answers
+  const [shuffleAnswers, setShuffleAnswers] = useState(false);
+
   const [loadingQuiz, setLoadingQuiz] = useState(false);
   const [error, setError] = useState("");
 
@@ -77,7 +80,7 @@ export default function AdvancedSetup({ quizList, onStart, onBack }) {
 
     setError("");
     setExactError("");
-    onStart({ quizId: selectedQuizId, questionIndices, shuffle });
+    onStart({ quizId: selectedQuizId, questionIndices, shuffle, shuffleAnswers });
   }
 
   function handleExactChange(e) {
@@ -216,6 +219,19 @@ export default function AdvancedSetup({ quizList, onStart, onBack }) {
                 onChange={(e) => setShuffle(e.target.checked)}
               />
               Mezclar preguntas
+            </label>
+          </div>
+
+          <div className="advanced-setup__shuffle">
+            <label className="advanced-setup__label" htmlFor="shuffle-answers">
+              <input
+                id="shuffle-answers"
+                type="checkbox"
+                className="advanced-setup__checkbox"
+                checked={shuffleAnswers}
+                onChange={(e) => setShuffleAnswers(e.target.checked)}
+              />
+              Mezclar respuestas
             </label>
           </div>
 
