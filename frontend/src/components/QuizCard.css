@@ -94,4 +94,13 @@
   animation: fadeUp 0.3s 0.1s ease both;
   opacity: 0;
   animation-fill-mode: forwards;
+
+  /* Sticky bottom if out of view */
+  position: sticky;
+  bottom: 0.5rem;
+  left: 0;
+  z-index: 2;
+  box-shadow: 0 -2px 16px 0 rgba(0,0,0,0.04);
+  /* Add a background to avoid overlap */
+  background: var(--accent);
 }
