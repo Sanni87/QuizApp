@@ -18,7 +18,7 @@ export async function getCachedData(key, factory, { softTtlMs = 5 * 60 * 1000, h
     } catch {}
   }
 
-  if (cacheObj) {
+  if (cacheObj?.data) {
     if (now < cacheObj.softExpire) {
       // Not expired (soft)
       return cacheObj.data;

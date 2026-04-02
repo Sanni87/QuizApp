@@ -1,7 +1,7 @@
 // src/utils/api.js
 // Centralized API utilities for QuizApp
 
-import { getCachedData } from "./cache/localStorageCache";
+import { getCachedData, setCache } from "./cache/localStorageCache";
 
 export const API = import.meta.env.VITE_API_URL ?? "/api";
 
@@ -14,13 +14,22 @@ const HARD_TTL = 7 * 24 * 60 * 60 * 1000; // 1 semana en ms
 // si supera SOFT_TTL y HARD_TTL, se borra la cache y se obtiene del backend
 
 // Fetch quiz list
-export function fetchQuizList() {
+export async function fetchQuizList() {
   const url = `${API}/quizzes`;
-  return getCachedData(
+  
+  let result = await getCachedData(
     url,
     () => fetchQuizListFromService(url),
     { softTtlMs: SOFT_TTL, hardTtlMs: HARD_TTL }
   );
+
+  // Si por lo que sea el resultado no es válido
+  if (!(result?.length > 0)) {
+    result = await fetchQuizListFromService(url);
+    await setCache(url, result, SOFT_TTL, HARD_TTL);
+  }
+
+  return result;
 }
 
 // Fetch quiz by ID
@@ -43,6 +52,12 @@ export function fetchQuizAnswer(quizId, questionId, selectedIndex) {
   );
 }
 
+export function wakeUpBackend() {
+  // Llamada simple para despertar el backend
+  fetch(`${API}/quizzes`)
+    .then(() => console.log("Backend despertado"))
+    .catch(() => console.warn("No se pudo despertar el backend"));
+}
 
 //#region private functions
 
