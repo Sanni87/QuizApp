@@ -6,7 +6,7 @@ import Header from "./components/Header";
 import AdvancedSetup from "./components/AdvancedSetup";
 import "./App.css";
 
-const API = import.meta.env.VITE_API_URL ?? "/api";
+import { fetchQuizList, fetchQuizById } from "./utils/api";
 
 const VIEWS = { HOME: "home", QUIZ: "quiz", RESULT: "result", ADVANCED: "advanced" };
 
@@ -22,10 +22,9 @@ export default function App() {
   const [currentFailedIndices, setCurrentFailedIndices] = useState([]);
 
   useEffect(() => {
-    fetch(`${API}/quizzes`)
-      .then((r) => r.json())
+    fetchQuizList()
       .then(setQuizList)
-      .catch(() => setError("No se pudo cargar los tests. ¿Está el backend corriendo?"));
+      .catch((e) => setError(e.message));
   }, []);
 
   // Inicio normal desde la Home: todas las preguntas
@@ -33,8 +32,7 @@ export default function App() {
     setLoadingQuiz(true);
     setError(null);
     try {
-      const res = await fetch(`${API}/quizzes/${id}`);
-      const data = await res.json();
+      const data = await fetchQuizById(id);
       data.questions = data.questions.map((q, i) => ({ ...q, originalIndex: i + 1 }));
       setActiveQuiz(data);
       setQuizConfig(null); // sin filtro
@@ -42,8 +40,8 @@ export default function App() {
       setScore(0);
       setCurrentFailedIndices([]);
       setView(VIEWS.QUIZ);
-    } catch {
-      setError("Error cargando el quiz. Intenta de nuevo.");
+    } catch (e) {
+      setError(e.message);
     } finally {
       setLoadingQuiz(false);
     }
@@ -54,8 +52,7 @@ export default function App() {
     setLoadingQuiz(true);
     setError(null);
     try {
-      const res = await fetch(`${API}/quizzes/${quizId}`);
-      const data = await res.json();
+      const data = await fetchQuizById(quizId);
       data.questions = data.questions.map((q, i) => ({ ...q, originalIndex: i + 1 }));
       const filteredQuestions = data.questions.filter((q) =>
         questionIndices.includes(q.originalIndex)
@@ -75,8 +72,8 @@ export default function App() {
       setScore(0);
       setCurrentFailedIndices([]);
       setView(VIEWS.QUIZ);
-    } catch {
-      setError("Error cargando el quiz. Intenta de nuevo.");
+    } catch (e) {
+      setError(e.message);
     } finally {
       setLoadingQuiz(false);
     }

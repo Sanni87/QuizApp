@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./AdvancedSetup.css";
 
-const API = import.meta.env.VITE_API_URL ?? "/api";
+import { fetchQuizById } from "../utils/api";
 
 export default function AdvancedSetup({ quizList, onStart, onBack }) {
   const [selectedQuizId, setSelectedQuizId] = useState("");
@@ -28,8 +28,7 @@ export default function AdvancedSetup({ quizList, onStart, onBack }) {
   useEffect(() => {
     if (!selectedQuizId) return;
     setLoadingQuiz(true);
-    fetch(`${API}/quizzes/${selectedQuizId}`)
-      .then((res) => res.json())
+    fetchQuizById(selectedQuizId)
       .then((data) => {
         const total = data.questions?.length ?? 0;
         setTotalQuestions(total);

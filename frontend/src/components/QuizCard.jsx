@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import "./QuizCard.css";
 
-const API = import.meta.env.VITE_API_URL ?? "/api";
+import { fetchQuizAnswer } from "../utils/api";
 
 export default function QuizCard({ quizId, question, index, total, onNext }) {
   const [selected, setSelected] = useState(null);
@@ -15,12 +15,7 @@ export default function QuizCard({ quizId, question, index, total, onNext }) {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API}/quizzes/${quizId}/answer`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ questionId: question.id, selectedIndex: optionIndex }),
-      });
-      const data = await res.json();
+      const data = await fetchQuizAnswer(quizId, question.id, optionIndex);
       setResult(data);
     } catch {
       setResult(null);
