@@ -205,11 +205,6 @@
     outline-offset: 1px;
   }
 
-/* ── Exact wrapper ── */
-.advanced-setup__exact {
-  /* placeholder for future extensions */
-}
-
 /* ── Start button ── */
 .advanced-setup__start {
   width: 100%;
