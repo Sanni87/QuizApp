@@ -1,5 +1,6 @@
 import * as express from "express";
-import { getAllQuizzes, getQuizById, setAnswerAsCorrect } from '../data/supabase/supabase.js';
+import { getAllQuizzes, getQuizById } from '../data/supabase/quiz_queries.js';
+import { setAnswerAsCorrect } from '../data/supabase/quiz_updates.js';
 const router = express.Router();
 
 // --- Middleware de autenticación ---

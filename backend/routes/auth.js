@@ -1,5 +1,5 @@
 import * as express from "express";
-import { loginUser } from '../data/supabase/supabase.js';
+import { loginUser } from '../data/supabase/auth.js';
 
 const router = express.Router();
 
