@@ -2,13 +2,44 @@
 .app-shell {
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  align-items: flex-start;
   justify-content: flex-start;
-  padding: 2rem 1rem;
   background: var(--bg);
 }
+
 .app-shell-inner {
   width: 100%;
   max-width: 560px;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1;
+}
+
+/* ── RESPONSIVE: PANTALLAS PEQUEÑAS (< 768px) ──────────────────────────────── */
+
+@media (max-width: 767px) {
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .app-shell-inner {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* ── RESPONSIVE: PANTALLAS MEDIANAS Y GRANDES (≥ 768px) ────────────────────── */
+
+@media (min-width: 768px) {
+  .app-shell {
+    flex-direction: row;
+  }
+
+  .app-shell-inner {
+    width: 100%;
+  }
 }

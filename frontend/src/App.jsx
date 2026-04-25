@@ -4,6 +4,7 @@ import Home from "./components/Home";
 import Quiz from "./components/Quiz";
 import Header from "./components/Header";
 import AdvancedSetup from "./components/AdvancedSetup";
+import SideBar from "./components/SideBar";
 import "./App.css";
 
 import { fetchQuizList, fetchQuizById } from "./utils/api";
@@ -20,6 +21,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const [quizConfig, setQuizConfig] = useState(null);
   const [currentFailedIndices, setCurrentFailedIndices] = useState([]);
+  const [sideBarOpen, setSideBarOpen] = useState(false);
 
   useEffect(() => {
     fetchQuizList()
@@ -128,11 +130,20 @@ export default function App() {
 
   const shell = (children) => (
     <div className="app-shell">
+      <SideBar
+        isOpen={sideBarOpen}
+        onClose={() => setSideBarOpen(false)}
+        quizList={quizList}
+        onHomeClick={() => setView(VIEWS.HOME)}
+        onAdvancedClick={() => setView(VIEWS.ADVANCED)}
+        activeQuizId={activeQuiz?.id}
+      />
       <div className="app-shell-inner">
         <Header
           view={view.replace(/^[a-z]+\./, "")}
           activeQuiz={activeQuiz}
           onHome={() => setView(VIEWS.HOME)}
+          onMenuToggle={() => setSideBarOpen(!sideBarOpen)}
         />
         {children}
       </div>

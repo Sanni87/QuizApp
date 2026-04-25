@@ -2,9 +2,14 @@
 import React from "react";
 import "./Header.css";
 
-export default function Header({ view, activeQuiz, onHome }) {
+export default function Header({ view, activeQuiz, onHome, onMenuToggle }) {
   return (
     <header className="header">
+      <button className="header-menu-toggle" onClick={onMenuToggle} aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
       <span
         onClick={onHome}
         className="header-title"

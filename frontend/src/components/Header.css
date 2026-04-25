@@ -4,7 +4,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
 }
+
 .header-title {
   font-family: Syne, sans-serif;
   font-weight: 800;
@@ -12,11 +14,39 @@
   cursor: pointer;
   letter-spacing: -0.02em;
 }
+
 .header-accent {
   color: var(--accent);
 }
+
 .header-quiz-title {
   font-size: 0.8rem;
   color: var(--text-muted);
   font-family: Syne, sans-serif;
+}
+
+/* Hamburger Menu Button */
+.header-menu-toggle {
+  display: none;
+  flex-direction: column;
+  background: none;
+  border: none;
+  cursor: pointer;
+  gap: 5px;
+  padding: 0;
+  margin: 0;
+}
+
+.header-menu-toggle span {
+  width: 24px;
+  height: 3px;
+  background: var(--text-primary, #333);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 767px) {
+  .header-menu-toggle {
+    display: flex;
+  }
 }
