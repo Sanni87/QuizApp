@@ -8,3 +8,12 @@ Content-Type: application/json
   "email": "user@example.com",
   "password": "password123"
 }
+
+### setAnswer
+PUT {{baseUrl}}/api/quizzes/answer/9/set-correct
+Content-Type: application/json
+Authorization: Bearer <token>
+
+PUT {{baseUrl}}/api/quizzes/answer/10/set-correct
+Content-Type: application/json
+Authorization: Bearer <token>

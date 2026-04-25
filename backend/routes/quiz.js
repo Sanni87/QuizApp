@@ -1,6 +1,16 @@
 import * as express from "express";
-import { getAllQuizzes, getQuizById } from '../data/supabase/supabase.js';
+import { getAllQuizzes, getQuizById, setAnswerAsCorrect } from '../data/supabase/supabase.js';
 const router = express.Router();
+
+// --- Middleware de autenticación ---
+function requireAuth(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ error: "Token no proporcionado" });
+  }
+  req.token = token;
+  next();
+}
 
 // GET /api/quizzes — list all quizzes (no answers exposed)
 router.get("/", async (req, res) => {
@@ -48,6 +58,25 @@ router.post("/:quizId/answer", async (req, res) => {
     correctIndex: correctAnswer?.id,
     explanation: question.explanation,
   });
+});
+
+// PUT /api/quizzes/answer/:answerId/set-correct — establish an answer as correct
+// Requiere autenticación (Bearer token de Supabase)
+router.put("/answer/:answerId/set-correct", requireAuth, async (req, res) => {
+  const { answerId } = req.params;
+  const token = req.token;
+
+  if (!answerId) {
+    return res.status(400).json({ error: "answerId es requerido" });
+  }
+
+  const result = await setAnswerAsCorrect(answerId, token);
+
+  if (!result.success) {
+    return res.status(401).json({ error: result.error });
+  }
+
+  res.json(result);
 });
 
 export default router;

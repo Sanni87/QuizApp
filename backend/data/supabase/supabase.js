@@ -9,14 +9,24 @@ import { createClient } from '@supabase/supabase-js';
 // --- Inicialización -----------------------------------------------------------
 const supabaseUrl  = process.env.SUPABASE_URL;
 const supabaseKey  = process.env.SUPABASE_SERVICE_KEY;
+const supabaseUpdateKey = process.env.SUPABASE_BACKEND_KEY; // Clave con permisos de escritura para el backend
 
 // El cliente es null si no hay variables de entorno → usa mocks
 const supabase = (supabaseUrl && supabaseKey)
   ? createClient(supabaseUrl, supabaseKey)
   : null;
-
+  
 if (!supabase) {
   console.warn('[DB] Variables SUPABASE_URL / SUPABASE_SERVICE_KEY no encontradas → usando mocks');
+}
+
+//Creamos otro cliente con permisos de escritura para las operaciones que lo requieran (ej. setAnswerAsCorrect)
+const supabaseWrite = (supabaseUrl && supabaseUpdateKey)
+  ? createClient(supabaseUrl, supabaseUpdateKey)
+  : null;
+
+if (!supabaseWrite) {
+  console.warn('[DB] Variable SUPABASE_BACKEND_KEY no encontrada → operaciones de escritura no disponibles');
 }
 
 // --- Helpers ------------------------------------------------------------------
@@ -109,11 +119,11 @@ async function getQuizById(id) {
  */
 async function loginUser(email, password) {
   try {
-    if (!supabase) {
-      throw new Error('Supabase no está configurado');
+    if (!supabaseWrite) {
+      throw new Error('Supabase con permisos de escritura no está configurado');
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabaseWrite.auth.signInWithPassword({
       email,
       password,
     });
@@ -142,4 +152,42 @@ async function loginUser(email, password) {
   }
 }
 
-export { getAllQuizzes, getQuizById, loginUser };
+/**
+ * Establece una respuesta como correcta y el resto de respuestas
+ * de la misma pregunta como incorrectas, dentro de una transacción.
+ * Requiere autenticación de Supabase.
+ */
+async function setAnswerAsCorrect(answerId, token) {
+  try {
+    if (!supabaseWrite) {
+      throw new Error('Supabase con permisos de escritura no está configurado');
+    }
+
+    // Validar token
+    const { data: { user }, error: authError } = await supabaseWrite.auth.getUser(token);
+    if (authError || !user) {
+      throw new Error('Token inválido o expirado');
+    }
+
+    // Llamar a la función SQL que maneja ambos updates en una transacción
+    const { data, error } = await supabaseWrite.rpc('set_answer_as_correct', {
+      p_answer_id: answerId,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (!data?.success) {
+      throw new Error(data?.error || 'Error desconocido al actualizar la respuesta');
+    }
+
+    return { success: true, message: data.message };
+
+  } catch (err) {
+    console.error('[DB] Error en setAnswerAsCorrect:', err.message);
+    return { success: false, error: err.message };
+  }
+}
+
+export { getAllQuizzes, getQuizById, loginUser, setAnswerAsCorrect };
