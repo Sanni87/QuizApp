@@ -103,4 +103,43 @@ async function getQuizById(id) {
   }
 }
 
-export { getAllQuizzes, getQuizById };
+/**
+ * Login de usuario con email y contraseña.
+ * Devuelve { user, session } si es exitoso, null si falla.
+ */
+async function loginUser(email, password) {
+  try {
+    if (!supabase) {
+      throw new Error('Supabase no está configurado');
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      console.error('[AUTH] Error en login:', error.message);
+      return null;
+    }
+
+    return {
+      user: {
+        id: data.user.id,
+        email: data.user.email,
+        user_metadata: data.user.user_metadata,
+      },
+      session: {
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token,
+        expires_in: data.session.expires_in,
+      },
+    };
+
+  } catch (err) {
+    console.error('[AUTH] Error en loginUser:', err.message);
+    return null;
+  }
+}
+
+export { getAllQuizzes, getQuizById, loginUser };

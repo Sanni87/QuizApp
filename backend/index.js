@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 
 const quizRoutes = require("./routes/quiz").default;
+const authRoutes = require("./routes/auth").default;
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -10,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/quizzes", quizRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/health", (_, res) => res.json({ status: "ok" }));
 
