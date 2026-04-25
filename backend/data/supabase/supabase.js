@@ -50,15 +50,7 @@ async function getAllQuizzes() {
   try {
     const { data, error } = await supabase
       .from('quizzes')
-      .select(`
-        id, title, description, order_index,
-        questions (
-          id, text, explanation, order_index,
-          answers (
-            id, text, is_correct, order_index
-          )
-        )
-      `)
+      .select('id, title, description, order_index')
       .order('order_index', { ascending: false });
 
     if (error) throw error;
@@ -67,9 +59,6 @@ async function getAllQuizzes() {
       id:          quiz.id,
       title:       quiz.title,
       description: quiz.description,
-      questions:   (quiz.questions ?? [])
-                     .sort((a, b) => a.order_index - b.order_index)
-                     .map(formatQuestion),
     }));
 
   } catch (err) {
