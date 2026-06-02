@@ -1,13 +1,28 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./QuizCard.css";
 
 import { fetchQuizAnswer } from "../utils/api";
+
+const ANSWER_DELAY = 1500; // tiempo de retraso para mostrar la respuesta
 
 export default function QuizCard({ quizId, question, index, total, onNext }) {
   const [selected, setSelected] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [waitingOptionId, setWaitingOptionId] = useState(null);
+  const timeoutRef = useRef(null);
+
+  const handleSelectWithDelay = (optionIndex) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setWaitingOptionId(optionIndex);
+    timeoutRef.current = setTimeout(() => {
+      setWaitingOptionId(null);
+      handleSelect(optionIndex);
+    }, ANSWER_DELAY);
+  };
 
   const handleSelect = async (optionIndex) => {
     if (selected !== null) return;
@@ -26,6 +41,7 @@ export default function QuizCard({ quizId, question, index, total, onNext }) {
 
   const getOptionClass = (idx) => {
     let cls = "quizcard-option";
+    if (waitingOptionId === idx) return cls + " waiting";
     if (result) {
       if (idx === result.correctIndex) return cls + " correct";
       if (idx === selected && !result.correct) return cls + " wrong";
@@ -36,6 +52,7 @@ export default function QuizCard({ quizId, question, index, total, onNext }) {
   };
 
   const getIcon = (idx) => {
+    if (idx === waitingOptionId) return <span className="quizcard-icon">⏳</span>;
     if (!result || selected === null) {
       const letters = ["A", "B", "C", "D"];
       return (
@@ -59,7 +76,7 @@ export default function QuizCard({ quizId, question, index, total, onNext }) {
           <button
             key={opt.id}
             className={getOptionClass(opt.id)}
-            onClick={() => handleSelect(opt.id)}
+            onClick={() => handleSelectWithDelay(opt.id)}
             onMouseEnter={(e) => {
               if (selected === null) {
                 e.currentTarget.style.borderColor = "var(--accent)";
