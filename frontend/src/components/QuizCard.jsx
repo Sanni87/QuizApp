@@ -1,13 +1,25 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./QuizCard.css";
 
 import { fetchQuizAnswer } from "../utils/api";
+
+const ANSWER_DELAY = 3000; // tiempo de retraso para mostrar la respuesta
 
 export default function QuizCard({ quizId, question, index, total, onNext }) {
   const [selected, setSelected] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const timeoutRef = useRef(null);
+
+  const handleSelectWithDelay = (optionIndex) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      handleSelect(optionIndex);
+    }, ANSWER_DELAY);
+  };
 
   const handleSelect = async (optionIndex) => {
     if (selected !== null) return;
@@ -59,7 +71,7 @@ export default function QuizCard({ quizId, question, index, total, onNext }) {
           <button
             key={opt.id}
             className={getOptionClass(opt.id)}
-            onClick={() => handleSelect(opt.id)}
+            onClick={() => handleSelectWithDelay(opt.id)}
             onMouseEnter={(e) => {
               if (selected === null) {
                 e.currentTarget.style.borderColor = "var(--accent)";
