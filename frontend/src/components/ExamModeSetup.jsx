@@ -8,13 +8,13 @@ const DEFAULT_SECOND_QUIZ_ID = "osakidetza-comun";
 
 export default function ExamModeSetup({ quizList, onStart, onBack }) {
   // First quiz
-  const [quizId1, setQuizId1] = useState("");
+  const [quizId1, setQuizId1] = useState(DEFAULT_FIRST_QUIZ_ID);
   const [questionCount1, setQuestionCount1] = useState(88);
   const [totalQuestions1, setTotalQuestions1] = useState(0);
   const [loading1, setLoading1] = useState(false);
 
   // Second quiz
-  const [quizId2, setQuizId2] = useState("");
+  const [quizId2, setQuizId2] = useState(DEFAULT_SECOND_QUIZ_ID);
   const [questionCount2, setQuestionCount2] = useState(22);
   const [totalQuestions2, setTotalQuestions2] = useState(0);
   const [loading2, setLoading2] = useState(false);
