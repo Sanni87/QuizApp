@@ -1,0 +1,52 @@
+/* ExamModeButton — self-contained styles (BEM) */
+
+.exam-mode-button {
+  text-align: left;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  background: darkgray;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  width: 100%;
+}
+
+.exam-mode-button:hover {
+  border-color: var(--accent);
+  background: #b5b5b5;
+}
+
+.exam-mode-button__content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.exam-mode-button__title {
+  font-family: Syne, sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 0.3rem;
+  color: #111;
+}
+
+.exam-mode-button__desc {
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.exam-mode-button__arrow {
+  min-width: fit-content;
+  padding: 0.25rem 0.6rem;
+  border-radius: 99px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+  font-family: Syne, sans-serif;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}

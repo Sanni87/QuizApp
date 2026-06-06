@@ -1,7 +1,7 @@
 import React from "react";
 import "./SideBar.css";
 
-export default function SideBar({ isOpen, onClose, quizList, onHomeClick, onAdvancedClick, activeQuizId }) {
+export default function SideBar({ isOpen, onClose, quizList, onHomeClick, onAdvancedClick, onExamModeClick, activeQuizId }) {
   return (
     <>
       {/* Overlay para cerrar el menú en móvil */}
@@ -17,6 +17,9 @@ export default function SideBar({ isOpen, onClose, quizList, onHomeClick, onAdva
             </button>
             <button className="sidebar-link" onClick={() => { onAdvancedClick(); onClose(); }}>
               ⚙️ Modo Avanzado
+            </button>
+            <button className="sidebar-link" onClick={() => { onExamModeClick(); onClose(); }}>
+              📝 Modo examen
             </button>
           </div>
 

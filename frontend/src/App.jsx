@@ -4,12 +4,13 @@ import Home from "./components/Home";
 import Quiz from "./components/Quiz";
 import Header from "./components/Header";
 import AdvancedSetup from "./components/AdvancedSetup";
+import ExamModeSetup from "./components/ExamModeSetup";
 import SideBar from "./components/SideBar";
 import "./App.css";
 
 import { fetchQuizList, fetchQuizById } from "./utils/api";
 
-const VIEWS = { HOME: "home", QUIZ: "quiz", RESULT: "result", ADVANCED: "advanced" };
+const VIEWS = { HOME: "home", QUIZ: "quiz", RESULT: "result", ADVANCED: "advanced", EXAM_MODE: "exam_mode" };
 
 export default function App() {
   const [view, setView] = useState(VIEWS.HOME);
@@ -81,6 +82,62 @@ export default function App() {
     }
   };
 
+    const handleExamModeStart = async ({ quizId1, questionCount1, quizId2, questionCount2, shuffle, shuffleAnswers }) => {
+    setLoadingQuiz(true);
+    setError(null);
+    try {
+      const quiz1 = await fetchQuizById(quizId1);
+      const quiz2 = await fetchQuizById(quizId2);
+
+      // Extract questions from first quiz
+      const questions1 = quiz1.questions
+        .slice(0, questionCount1)
+        .map((q, i) => ({ ...q, originalIndex: i + 1, quizSource: quizId1 }));
+
+      // Extract questions from second quiz
+      const questions2 = quiz2.questions
+        .slice(0, questionCount2)
+        .map((q, i) => ({ ...q, originalIndex: i + 1, quizSource: quizId2 }));
+
+      // Combine questions
+      let combinedQuestions = [...questions1, ...questions2];
+
+      if (shuffle) {
+        shuffleQuestions(combinedQuestions);
+      }
+
+      if (shuffleAnswers) {
+        shuffleQuestionAnswers(combinedQuestions);
+      }
+
+      // Use first quiz as base for the combined quiz object
+      const combinedQuiz = {
+        ...quiz1,
+        title: `${quiz1.title} + ${quiz2.title}`,
+        questions: combinedQuestions,
+      };
+
+      setActiveQuiz(combinedQuiz);
+      setQuizConfig({
+        examMode: true,
+        quizId1,
+        questionCount1,
+        quizId2,
+        questionCount2,
+        shuffle,
+        shuffleAnswers,
+      });
+      setQuestionIndex(0);
+      setScore(0);
+      setCurrentFailedIndices([]);
+      setView(VIEWS.QUIZ);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoadingQuiz(false);
+    }
+  };
+
   const handleNext = (wasCorrect) => {
     const failedIndex = activeQuiz.questions[questionIndex].originalIndex;
     let newFailedIndices = currentFailedIndices;
@@ -136,6 +193,7 @@ export default function App() {
         quizList={quizList}
         onHomeClick={() => setView(VIEWS.HOME)}
         onAdvancedClick={() => setView(VIEWS.ADVANCED)}
+        onExamModeClick={() => setView(VIEWS.EXAM_MODE)}
         activeQuizId={activeQuiz?.id}
       />
       <div className="app-shell-inner">
@@ -179,6 +237,17 @@ export default function App() {
     );
   }
 
+  // ── EXAM MODE ─────────────────────────────────────────────────────────────
+  if (view === VIEWS.EXAM_MODE) {
+    return shell(
+      <ExamModeSetup
+        quizList={quizList}
+        onStart={handleExamModeStart}
+        onBack={() => setView(VIEWS.HOME)}
+      />
+    );
+  }
+
   // ── HOME ──────────────────────────────────────────────────────────────────
   if (view === VIEWS.HOME) {
     return shell(
@@ -189,6 +258,7 @@ export default function App() {
           error={error}
           startQuiz={startQuiz}
           onAdvancedClick={() => setView(VIEWS.ADVANCED)}
+          onExamModeClick={() => setView(VIEWS.EXAM_MODE)}
         />
       </>
     );
@@ -212,13 +282,22 @@ export default function App() {
         score={score}
         total={activeQuiz.questions.length}
         currentFailedIndices={currentFailedIndices}
-        onRestart={() =>
-          quizConfig
-            ? handleAdvancedStart(quizConfig)
-            : startQuiz(activeQuiz.id)
-        }
+        onRestart={() => {
+          if (quizConfig?.examMode) {
+            handleExamModeStart(quizConfig);
+          } else if (quizConfig) {
+            handleAdvancedStart(quizConfig);
+          } else {
+            startQuiz(activeQuiz.id);
+          }
+        }}
         onRetryFailed={() => {
-          handleAdvancedStart({ quizId: activeQuiz.id, questionIndices: currentFailedIndices, shuffle: quizConfig?.shuffle, shuffleAnswers: quizConfig?.shuffleAnswers });
+          if (quizConfig?.examMode) {
+            // For exam mode, retry failed questions from both quizzes
+            handleExamModeStart({ ...quizConfig, questionIndices: currentFailedIndices });
+          } else {
+            handleAdvancedStart({ quizId: activeQuiz.id, questionIndices: currentFailedIndices, shuffle: quizConfig?.shuffle, shuffleAnswers: quizConfig?.shuffleAnswers });
+          }
         }}
         onHome={() => setView(VIEWS.HOME)}
       />
