@@ -4,6 +4,7 @@ import Home from "./components/Home";
 import Quiz from "./components/Quiz";
 import Header from "./components/Header";
 import AdvancedSetup from "./components/AdvancedSetup";
+import ExamModeSetup from "./components/ExamModeSetup";
 import SideBar from "./components/SideBar";
 import "./App.css";
 
@@ -70,6 +71,62 @@ export default function App() {
 
       setActiveQuiz({ ...data, questions: filteredQuestions });
       setQuizConfig({ quizId, questionIndices, shuffle, shuffleAnswers });
+      setQuestionIndex(0);
+      setScore(0);
+      setCurrentFailedIndices([]);
+      setView(VIEWS.QUIZ);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoadingQuiz(false);
+    }
+  };
+
+    const handleExamModeStart = async ({ quizId1, questionCount1, quizId2, questionCount2, shuffle, shuffleAnswers }) => {
+    setLoadingQuiz(true);
+    setError(null);
+    try {
+      const quiz1 = await fetchQuizById(quizId1);
+      const quiz2 = await fetchQuizById(quizId2);
+
+      // Extract questions from first quiz
+      const questions1 = quiz1.questions
+        .slice(0, questionCount1)
+        .map((q, i) => ({ ...q, originalIndex: i + 1, quizSource: quizId1 }));
+
+      // Extract questions from second quiz
+      const questions2 = quiz2.questions
+        .slice(0, questionCount2)
+        .map((q, i) => ({ ...q, originalIndex: i + 1, quizSource: quizId2 }));
+
+      // Combine questions
+      let combinedQuestions = [...questions1, ...questions2];
+
+      if (shuffle) {
+        shuffleQuestions(combinedQuestions);
+      }
+
+      if (shuffleAnswers) {
+        shuffleQuestionAnswers(combinedQuestions);
+      }
+
+      // Use first quiz as base for the combined quiz object
+      const combinedQuiz = {
+        ...quiz1,
+        title: `${quiz1.title} + ${quiz2.title}`,
+        questions: combinedQuestions,
+      };
+
+      setActiveQuiz(combinedQuiz);
+      setQuizConfig({
+        examMode: true,
+        quizId1,
+        questionCount1,
+        quizId2,
+        questionCount2,
+        shuffle,
+        shuffleAnswers,
+      });
       setQuestionIndex(0);
       setScore(0);
       setCurrentFailedIndices([]);
@@ -183,10 +240,11 @@ export default function App() {
   // ── EXAM MODE ─────────────────────────────────────────────────────────────
   if (view === VIEWS.EXAM_MODE) {
     return shell(
-      <div style={{ textAlign: "center", padding: "2rem" }}>
-        <p style={{ color: "var(--text-muted)" }}>Modo Examen — próximamente</p>
-        <button onClick={() => setView(VIEWS.HOME)} style={{ marginTop: "1rem" }}>← Volver</button>
-      </div>
+      <ExamModeSetup
+        quizList={quizList}
+        onStart={handleExamModeStart}
+        onBack={() => setView(VIEWS.HOME)}
+      />
     );
   }
 
@@ -224,13 +282,22 @@ export default function App() {
         score={score}
         total={activeQuiz.questions.length}
         currentFailedIndices={currentFailedIndices}
-        onRestart={() =>
-          quizConfig
-            ? handleAdvancedStart(quizConfig)
-            : startQuiz(activeQuiz.id)
-        }
+        onRestart={() => {
+          if (quizConfig?.examMode) {
+            handleExamModeStart(quizConfig);
+          } else if (quizConfig) {
+            handleAdvancedStart(quizConfig);
+          } else {
+            startQuiz(activeQuiz.id);
+          }
+        }}
         onRetryFailed={() => {
-          handleAdvancedStart({ quizId: activeQuiz.id, questionIndices: currentFailedIndices, shuffle: quizConfig?.shuffle, shuffleAnswers: quizConfig?.shuffleAnswers });
+          if (quizConfig?.examMode) {
+            // For exam mode, retry failed questions from both quizzes
+            handleExamModeStart({ ...quizConfig, questionIndices: currentFailedIndices });
+          } else {
+            handleAdvancedStart({ quizId: activeQuiz.id, questionIndices: currentFailedIndices, shuffle: quizConfig?.shuffle, shuffleAnswers: quizConfig?.shuffleAnswers });
+          }
         }}
         onHome={() => setView(VIEWS.HOME)}
       />
