@@ -136,6 +136,7 @@ export default function App() {
         quizList={quizList}
         onHomeClick={() => setView(VIEWS.HOME)}
         onAdvancedClick={() => setView(VIEWS.ADVANCED)}
+        onExamModeClick={() => setView(VIEWS.EXAM_MODE)}
         activeQuizId={activeQuiz?.id}
       />
       <div className="app-shell-inner">
