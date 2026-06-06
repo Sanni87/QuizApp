@@ -90,12 +90,16 @@ export default function App() {
       const quiz2 = await fetchQuizById(quizId2);
 
       // Extract questions from first quiz
-      const questions1 = quiz1.questions
+      const shuffledQuiz1 = [...quiz1.questions];
+      shuffleQuestions(shuffledQuiz1);
+      const questions1 = shuffledQuiz1
         .slice(0, questionCount1)
         .map((q, i) => ({ ...q, originalIndex: i + 1, quizSource: quizId1 }));
 
       // Extract questions from second quiz
-      const questions2 = quiz2.questions
+      const shuffledQuiz2 = [...quiz2.questions];
+      shuffleQuestions(shuffledQuiz2);
+      const questions2 = shuffledQuiz2
         .slice(0, questionCount2)
         .map((q, i) => ({ ...q, originalIndex: i + 1, quizSource: quizId2 }));
 
@@ -213,6 +217,7 @@ export default function App() {
       const j = Math.floor(Math.random() * (i + 1));
       [filteredQuestions[i], filteredQuestions[j]] = [filteredQuestions[j], filteredQuestions[i]];
     }
+    return filteredQuestions;
   }
 
   const shuffleQuestionAnswers = (filteredQuestions) => {
