@@ -7,6 +7,7 @@ export default function SideBar({
   quizList,
   onHomeClick,
   onAdvancedClick,
+  onExamModeClick,
   activeQuizId,
   isAuthenticated,
   user,
@@ -60,6 +61,9 @@ export default function SideBar({
             </button>
             <button className="sidebar-link" onClick={() => { onAdvancedClick(); onClose(); }}>
               ⚙️ Modo Avanzado
+            </button>
+            <button className="sidebar-link" onClick={() => { onExamModeClick(); onClose(); }}>
+              📝 Modo examen
             </button>
           </div>
 
