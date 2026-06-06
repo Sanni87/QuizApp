@@ -1,7 +1,8 @@
 import "./Home.css";
 import AdvancedButton from "./AdvancedButton";
+import ExamModeButton from "./ExamModeButton";
 
-export default function Home({ quizList, loadingQuiz, error, startQuiz, onAdvancedClick }) {
+export default function Home({ quizList, loadingQuiz, error, startQuiz, onAdvancedClick, onExamModeClick }) {
   return (
     <>
       <div style={{ marginBottom: "2.5rem" }}>
@@ -20,7 +21,10 @@ export default function Home({ quizList, loadingQuiz, error, startQuiz, onAdvanc
 
       <div className="home-list">
         {!error && (
-          <AdvancedButton onClick={() => onAdvancedClick()} />
+          <>
+            <AdvancedButton onClick={() => onAdvancedClick()} />
+            <ExamModeButton onClick={() => onExamModeClick()} />
+          </>
         )}
 
         {quizList.length === 0 && !error && (

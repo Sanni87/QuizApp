@@ -9,7 +9,7 @@ import "./App.css";
 
 import { fetchQuizList, fetchQuizById } from "./utils/api";
 
-const VIEWS = { HOME: "home", QUIZ: "quiz", RESULT: "result", ADVANCED: "advanced" };
+const VIEWS = { HOME: "home", QUIZ: "quiz", RESULT: "result", ADVANCED: "advanced", EXAM_MODE: "exam_mode" };
 
 export default function App() {
   const [view, setView] = useState(VIEWS.HOME);
@@ -179,6 +179,16 @@ export default function App() {
     );
   }
 
+  // ── EXAM MODE ─────────────────────────────────────────────────────────────
+  if (view === VIEWS.EXAM_MODE) {
+    return shell(
+      <div style={{ textAlign: "center", padding: "2rem" }}>
+        <p style={{ color: "var(--text-muted)" }}>Modo Examen — próximamente</p>
+        <button onClick={() => setView(VIEWS.HOME)} style={{ marginTop: "1rem" }}>← Volver</button>
+      </div>
+    );
+  }
+
   // ── HOME ──────────────────────────────────────────────────────────────────
   if (view === VIEWS.HOME) {
     return shell(
@@ -189,6 +199,7 @@ export default function App() {
           error={error}
           startQuiz={startQuiz}
           onAdvancedClick={() => setView(VIEWS.ADVANCED)}
+          onExamModeClick={() => setView(VIEWS.EXAM_MODE)}
         />
       </>
     );
