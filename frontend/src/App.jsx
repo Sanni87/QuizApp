@@ -90,17 +90,13 @@ export default function App() {
       const quiz2 = await fetchQuizById(quizId2);
 
       // Extract questions from first quiz
-      const shuffledQuiz1 = [...quiz1.questions];
-      shuffleQuestions(shuffledQuiz1);
+      const shuffledQuiz1 = getRandomElements(quiz1.questions, questionCount1);
       const questions1 = shuffledQuiz1
-        .slice(0, questionCount1)
         .map((q, i) => ({ ...q, originalIndex: i + 1, quizSource: quizId1 }));
 
       // Extract questions from second quiz
-      const shuffledQuiz2 = [...quiz2.questions];
-      shuffleQuestions(shuffledQuiz2);
+      const shuffledQuiz2 = getRandomElements(quiz2.questions, questionCount2);
       const questions2 = shuffledQuiz2
-        .slice(0, questionCount2)
         .map((q, i) => ({ ...q, originalIndex: i + 1, quizSource: quizId2 }));
 
       // Combine questions
@@ -211,6 +207,11 @@ export default function App() {
       </div>
     </div>
   );
+
+  const getRandomElements = (arr, count) => {
+    const shuffled = [...arr].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
 
   const shuffleQuestions = (filteredQuestions) => {
     for (let i = filteredQuestions.length - 1; i > 0; i--) {
