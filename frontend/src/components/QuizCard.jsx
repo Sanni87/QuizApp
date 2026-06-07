@@ -4,7 +4,7 @@ import "./QuizCard.css";
 
 import { fetchQuizAnswer } from "../utils/api";
 
-const SHOW_ANSWER_DELAY = 2000; //ms
+const SHOW_ANSWER_DELAY = 1000; //ms
 
 export default function QuizCard({ quizId, question, index, total, onNext }) {
   const [selected, setSelected] = useState(null);
@@ -12,7 +12,7 @@ export default function QuizCard({ quizId, question, index, total, onNext }) {
   const [loading, setLoading] = useState(false);
 
   const handleSelect = (optionIndex) => {
-    if (selected !== null) return;
+    //if (selected !== null) return;
     setSelected(optionIndex);
   };
 
@@ -40,7 +40,7 @@ export default function QuizCard({ quizId, question, index, total, onNext }) {
       if (idx === selected && !result.correct) return cls + " wrong";
     }
     if (idx === selected) return cls + " selected";
-    if (selected !== null && !result) return cls + " inactive";
+    //if (selected !== null && !result) return cls + " inactive";
     return cls;
   };
 
@@ -69,19 +69,6 @@ export default function QuizCard({ quizId, question, index, total, onNext }) {
             key={opt.id}
             className={getOptionClass(opt.id)}
             onClick={() => handleSelect(opt.id)}
-            disabled={selected !== null}
-            onMouseEnter={(e) => {
-              if (selected === null) {
-                e.currentTarget.style.borderColor = "var(--accent)";
-                e.currentTarget.style.background = "var(--bg3)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (selected === null) {
-                e.currentTarget.style.borderColor = "var(--border)";
-                e.currentTarget.style.background = "var(--bg2)";
-              }
-            }}
           >
             {getIcon(opt.id)}
             {opt.text}
