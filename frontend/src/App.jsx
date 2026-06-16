@@ -82,25 +82,32 @@ export default function App() {
     }
   };
 
-    const handleExamModeStart = async ({ quizId1, questionCount1, quizId2, questionCount2, shuffle, shuffleAnswers }) => {
+    const handleExamModeStart = async ({ quizId1, questionCount1, quizId2, questionCount2, shuffle, shuffleAnswers, failedQuestions }) => {
     setLoadingQuiz(true);
     setError(null);
     try {
       const quiz1 = await fetchQuizById(quizId1);
       const quiz2 = await fetchQuizById(quizId2);
 
-      // Extract questions from first quiz
-      const shuffledQuiz1 = getRandomElements(quiz1.questions, questionCount1);
-      const questions1 = shuffledQuiz1
-        .map((q, i) => ({ ...q, originalIndex: i + 1, quizSource: quizId1 }));
+      // Determine questions to use
+      let combinedQuestions;
+      
+      if (failedQuestions) {
+        // Retry mode: use only the failed questions
+        combinedQuestions = [...failedQuestions];
+      } else {
+        // Normal mode: extract random questions from both quizzes
+        const shuffledQuiz1 = getRandomElements(quiz1.questions, questionCount1);
+        const questions1 = shuffledQuiz1
+          .map((q, i) => ({ ...q, originalIndex: i + 1, quizSource: quizId1 }));
 
-      // Extract questions from second quiz
-      const shuffledQuiz2 = getRandomElements(quiz2.questions, questionCount2);
-      const questions2 = shuffledQuiz2
-        .map((q, i) => ({ ...q, originalIndex: i + 1, quizSource: quizId2 }));
+        const shuffledQuiz2 = getRandomElements(quiz2.questions, questionCount2);
+        const questions2 = shuffledQuiz2
+          .map((q, i) => ({ ...q, originalIndex: i + 1, quizSource: quizId2 }));
 
-      // Combine questions
-      let combinedQuestions = [...questions1, ...questions2];
+        // Combine questions
+        combinedQuestions = [...questions1, ...questions2];
+      }
 
       if (shuffle) {
         shuffleQuestions(combinedQuestions);
@@ -299,8 +306,11 @@ export default function App() {
         }}
         onRetryFailed={() => {
           if (quizConfig?.examMode) {
-            // For exam mode, retry failed questions from both quizzes
-            handleExamModeStart({ ...quizConfig, questionIndices: currentFailedIndices });
+            // For exam mode, collect failed questions and retry them
+            const failedQuestions = activeQuiz.questions
+              .filter(q => currentFailedIndices.includes(q.originalIndex))
+              .map((q, i) => ({ ...q, originalIndex: i + 1 }));
+            handleExamModeStart({ ...quizConfig, failedQuestions });
           } else {
             handleAdvancedStart({ quizId: activeQuiz.id, questionIndices: currentFailedIndices, shuffle: quizConfig?.shuffle, shuffleAnswers: quizConfig?.shuffleAnswers });
           }
